@@ -1,4 +1,13 @@
-FROM ubuntu:latest
-LABEL authors="karls junnior"
+FROM node:14
 
-ENTRYPOINT ["top", "-b"]
+WORKDIR /src
+
+COPY package.json package-lock.json ./
+
+RUN npm install
+
+COPY . .
+
+EXPOSE 3000
+
+CMD ["npm", "run", "dev"]
