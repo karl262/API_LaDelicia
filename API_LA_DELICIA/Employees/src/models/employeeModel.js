@@ -14,32 +14,24 @@ class Employee {
 
     static async findByName(name) {
         const result = await pool.query(
-            'SELECT * FROM employee WHERE name ILIKE $1 AND delete_at IS NULL',
+            'SELECT * FROM employee WHERE name_employee ILIKE $1 AND delete_at IS NULL',
             [`%${name}%`]
         );
         return result.rows;
     }
 
-    static async findBySalary(salary) {
+    static async create(name_employee, middle_name, last_name, street_address, city_address, postal_code, cellphone_number) {
         const result = await pool.query(
-            'SELECT * FROM employee WHERE salary = $1 AND delete_at IS NULL',
-            [salary]
-        );
-        return result.rows;
-    }
-
-    static async create(name, email, cellphone_number, salary) {
-        const result = await pool.query(
-            'INSERT INTO employee (name, email, cellphone_number, salary) VALUES ($1, $2, $3, $4) RETURNING *',
-            [name, email, cellphone_number, salary]
+            'INSERT INTO employee (name_employee, middle_name, last_name, street_address, city_address, postal_code, cellphone_number, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, CURRENT_TIMESTAMP) RETURNING *',
+            [name_employee, middle_name, last_name, street_address, city_address, postal_code, cellphone_number]
         );
         return result.rows[0];
     }
 
-    static async update(id, name, email, cellphone_number, salary) {
+    static async update(id, name_employee, middle_name, last_name, street_address, city_address, postal_code, cellphone_number) {
         const result = await pool.query(
-            'UPDATE employee SET name = $1, email = $2, cellphone_number = $3, salary = $4, update_at = CURRENT_TIMESTAMP WHERE id = $5 AND delete_at IS NULL RETURNING *',
-            [name, email, cellphone_number, salary, id]
+            'UPDATE employee SET name_employee = $1, middle_name = $2, last_name = $3, street_address = $4, city_address = $5, postal_code = $6, cellphone_number = $7, updated_at = CURRENT_TIMESTAMP WHERE id = $8 RETURNING *',
+            [name_employee, middle_name, last_name, street_address, city_address, postal_code, cellphone_number, id]
         );
         return result.rows[0];
     }

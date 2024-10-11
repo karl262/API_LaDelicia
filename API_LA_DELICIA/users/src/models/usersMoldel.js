@@ -18,23 +18,23 @@ class User {
 
     static async findByUserName(name) {
         const result = await pool.query(
-            'SELECT * FROM users WHERE name ILIKE $1 AND delete_at IS NULL', [`%${name}%`]
+            'SELECT * FROM users WHERE first_name ILIKE $1 AND delete_at IS NULL', [`%${name}%`]
         );
         return result.rows;
     }
 
-    static async create(name, email) {
+    static async create(first_name, last_name, date_of_birth, phone_number, preferred_payment_method) {
         const result = await pool.query(
-            'INSERT INTO users (name, email) VALUES ($1, $2) RETURNING *',
-            [name, email]
+            'INSERT INTO users (first_name, last_name, date_of_birth, phone_number, preferred_payment_method, updated_at) VALUES ($1, $2, $3, $4, $5, CURRENT_TIMESTAMP) RETURNING *', // Agregado updated_at
+            [first_name, last_name, date_of_birth, phone_number, preferred_payment_method]
         );
         return result.rows[0];
     }
 
-    static async update(id, name, email) {
+    static async update(id, first_name, last_name, date_of_birth, phone_number, preferred_payment_method) {
         const result = await pool.query(
-            'UPDATE users SET name = $1, email = $2, update_at = CURRENT_TIMESTAMP WHERE id = $3 AND delete_at IS NULL RETURNING *',
-            [name, email, id]
+            'UPDATE users SET first_name = $1, last_name = $2, date_of_birth = $3, phone_number = $4, preferred_payment_method = $5, updated_at = CURRENT_TIMESTAMP WHERE id = $6 AND delete_at IS NULL RETURNING *', // Corregido update_at a updated_at
+            [first_name, last_name, date_of_birth, phone_number, preferred_payment_method, id]
         );
         return result.rows[0];
     }

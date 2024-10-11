@@ -4,17 +4,20 @@ const SaleDetail = require('../models/detailSaleModel');
 
 class SaleController {
     static async createSale(req, res) {
-        const { total, discount, clientId, employeeId, paymentMethodId, details } = req.body;
+        const { total, discount, details } = req.body; 
         const client = await pool.connect();
 
         try {
             await client.query('BEGIN'); 
 
-            const sale = await Sale.create(total, discount, clientId, employeeId, paymentMethodId); 
+            // Crear la venta
+            const sale = await Sale.create(total, discount); 
 
-            for (let detail of details) {
-                await SaleDetail.create(sale.id, detail.productId, detail.quantity); 
-            }
+            // Crear los detalles de la venta
+            const detailPromises = details.map(detail => 
+                SaleDetail.create(sale.id, detail.quantity) // Se asume que detail.quantity es un número
+            );
+            await Promise.all(detailPromises); // Esperar a que se creen todos los detalles
 
             await client.query('COMMIT'); 
             res.status(201).json({ sale, details });
@@ -39,9 +42,10 @@ class SaleController {
         try {
             const sale = await Sale.findById(req.params.id);
             if (sale) {
-                res.status(200).json(sale);
+                const details = await SaleDetail.findBySaleId(sale.id); // Obtener detalles de la venta
+                res.status(200).json({ sale, details });
             } else {
-                res.status(404).json({ message: 'Sale not found' });
+                res.status(404).json({ message: 'Venta no encontrada' });
             }
         } catch (error) {
             res.status(500).json({ error: error.message });
@@ -49,11 +53,15 @@ class SaleController {
     }
 
     static async updateSale(req, res) {
-        const { total, discount, clientId, employeeId, paymentMethodId } = req.body;
+        const { total, discount, paymentMethodId } = req.body; // Se espera que se envíen estos campos
 
         try {
-            const updatedSale = await Sale.update(req.params.id, total, discount, clientId, employeeId, paymentMethodId);
-            res.status(200).json(updatedSale);
+            const updatedSale = await Sale.update(req.params.id, total, discount, paymentMethodId);
+            if (updatedSale) {
+                res.status(200).json(updatedSale);
+            } else {
+                res.status(404).json({ message: 'Venta no encontrada' });
+            }
         } catch (error) {
             res.status(500).json({ error: error.message });
         }
@@ -62,7 +70,11 @@ class SaleController {
     static async deleteSale(req, res) {
         try {
             const deletedSale = await Sale.delete(req.params.id);
-            res.status(200).json(deletedSale);
+            if (deletedSale) {
+                res.status(200).json(deletedSale);
+            } else {
+                res.status(404).json({ message: 'Venta no encontrada' });
+            }
         } catch (error) {
             res.status(500).json({ error: error.message });
         }
