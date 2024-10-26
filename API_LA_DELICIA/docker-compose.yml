@@ -1,0 +1,130 @@
+services:
+  auth-service:
+    build: ./Auths
+    command: npm run dev
+    ports:
+      - "3001:3000"
+    environment:
+      - DB_HOST=auth-db
+      - DB_USER=user
+      - DB_PASSWORD=password
+      - DB_NAME=auth_db
+      - DB_PORT=5432
+      - JWT_SECRET=c99l108a97v118e101p112r114i105v118a97d100a97j106w119t116t116o111k107e101n110
+    depends_on:
+      - auth-db
+
+  user-service:
+    build: ./Users
+    command: npm run dev
+    ports:
+      - "3002:3000"
+    environment:
+      - DB_HOST=user-db
+      - DB_USER=user
+      - DB_PASSWORD=password
+      - DB_NAME=user_db
+      - AUTH_SERVICE_URL=http://auth-service:3000
+    depends_on:
+      - user-db
+      - auth-service
+
+  product-service:
+    build: ./Products
+    command: npm run dev
+    ports:
+      - "3003:3000"
+    environment:
+      - DB_HOST=product-db
+      - DB_USER=user
+      - DB_PASSWORD=password
+      - DB_NAME=product_db
+      - AUTH_SERVICE_URL=http://auth-service:3000
+    depends_on:
+      - product-db
+      - auth-service
+
+  employee-service:
+    build: ./Employees
+    command: npm run dev
+    ports:
+      - "3004:3000"
+    environment:
+      - DB_HOST=employee-db
+      - DB_USER=user
+      - DB_PASSWORD=password
+      - DB_NAME=employee_db
+      - AUTH_SERVICE_URL=http://auth-service:3000
+    depends_on:
+      - employee-db
+      - auth-service
+  
+  sale-service:
+    build: ./Sales
+    command: npm run dev
+    ports:
+      - "3005:3000"
+    environment:
+      - DB_HOST=sale-db
+      - DB_USER=user
+      - DB_PASSWORD=password
+      - DB_NAME=sale_db
+      - AUTH_SERVICE_URL=http://auth-service:3000
+    depends_on:
+      - sale-db
+      - auth-service
+
+  auth-db:
+    image: postgres:13
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=auth_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./Auths/db-init:/docker-entrypoint-initdb.d  # Carpeta de inicialización para auth-db
+
+  user-db:
+    image: postgres:13
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=user_db
+    ports:
+      - "5434:5434" 
+    volumes:
+      - ./Users/db-init:/docker-entrypoint-initdb.d  # Carpeta de inicialización para user-db
+
+  product-db:
+    image: postgres:13
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=product_db
+    ports:
+      - "5435:5435"
+    volumes:
+      - ./Products/db-init:/docker-entrypoint-initdb.d  # Carpeta de inicialización para product-db
+
+  employee-db:
+    image: postgres:13
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=employee_db
+    ports:
+      - "5436:5436"
+    volumes:
+      - ./Employees/db-init:/docker-entrypoint-initdb.d  # Carpeta de inicialización para employee-db
+
+  sale-db:
+    image: postgres:13
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=sale_db
+    ports:
+      - "5437:5437"
+    volumes:
+      - ./Sales/db-init:/docker-entrypoint-initdb.d  # Carpeta de inicialización para sale-db
