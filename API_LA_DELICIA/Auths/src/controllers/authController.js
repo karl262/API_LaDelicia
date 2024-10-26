@@ -5,6 +5,7 @@ const { validateJwtToken } = require('../middlewares/authMiddleware');
 
 class authController{
 
+    //modificaciones login
     static async login(req, res) {
         try {
           const { username, email, password } = req.body;

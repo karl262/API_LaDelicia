@@ -1,5 +1,6 @@
 const { body, validationResult } = require('express-validator');
 
+//validaciones
 const validateDataLogin = [
 
     body('username')

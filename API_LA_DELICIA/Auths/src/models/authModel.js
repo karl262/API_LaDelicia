@@ -2,6 +2,7 @@ const bcrypt = require('bcryptjs');
 const pool = require('../config/db');
 
 class authModel {
+  //modificaciones login
     static async getDataLogin({ username, email, password }) {
         try {
           console.log('Intentando login con:', { username, email });
