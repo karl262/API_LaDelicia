@@ -92,7 +92,7 @@ services:
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=user_db
     ports:
-      - "5434:5434" 
+      - "5434:5432" 
     volumes:
       - ./Users/db-init:/docker-entrypoint-initdb.d  # Carpeta de inicialización para user-db
 
@@ -103,7 +103,7 @@ services:
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=product_db
     ports:
-      - "5435:5435"
+      - "5435:5432"
     volumes:
       - ./Products/db-init:/docker-entrypoint-initdb.d  # Carpeta de inicialización para product-db
 
@@ -114,7 +114,7 @@ services:
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=employee_db
     ports:
-      - "5436:5436"
+      - "5436:5432"
     volumes:
       - ./Employees/db-init:/docker-entrypoint-initdb.d  # Carpeta de inicialización para employee-db
 
@@ -125,6 +125,6 @@ services:
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=sale_db
     ports:
-      - "5437:5437"
+      - "5437:5432"
     volumes:
       - ./Sales/db-init:/docker-entrypoint-initdb.d  # Carpeta de inicialización para sale-db

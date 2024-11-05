@@ -23,10 +23,10 @@ class User {
         return result.rows;
     }
 
-    static async create(first_name, last_name, date_of_birth, phone_number, preferred_payment_method) {
+    static async create(first_name, last_name, date_of_birth, phone_number, preferred_payment_method, auth_user_id) {
         const result = await pool.query(
-            'INSERT INTO users (first_name, last_name, date_of_birth, phone_number, preferred_payment_method, updated_at) VALUES ($1, $2, $3, $4, $5, CURRENT_TIMESTAMP) RETURNING *', // Agregado updated_at
-            [first_name, last_name, date_of_birth, phone_number, preferred_payment_method]
+            'INSERT INTO users (first_name, last_name, date_of_birth, phone_number, preferred_payment_method, auth_user_id, updated_at) VALUES ($1, $2, $3, $4, $5, $6, CURRENT_TIMESTAMP) RETURNING *', // Agregado updated_at
+            [first_name, last_name, date_of_birth, phone_number, preferred_payment_method, auth_user_id]
         );
         return result.rows[0];
     }
