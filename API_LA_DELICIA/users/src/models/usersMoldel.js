@@ -4,8 +4,17 @@ const axios = require('axios');
 class User {
     static async findAll() {
         try {
-            const result = await pool.query('SELECT * FROM users');
-            return result.rows;
+            const result = await pool.query('SELECT * FROM users WHERE delete_at IS NULL');
+            if (result.rows.length === 0) {
+                return [];
+            }
+            
+            const userData = result.rows;
+            const authUserIds = userData.map(user => user.auth_user_id);
+            const responses = await Promise.all(authUserIds.map(authUserId => axios.get(`http://auth-service:3000/api/auth/by/${authUserId}`)));
+            const authData = responses.map(response => response.data);
+            const combinedData = userData.map((user, index) => ({ user, auth: authData[index] }));
+            return combinedData;
         } catch (error) {
             console.error('Error al buscar usuarios:', error);
             throw new Error('Error al buscar usuarios en la base de datos');
