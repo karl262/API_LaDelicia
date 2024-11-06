@@ -1,4 +1,5 @@
 const pool = require('../config/db');
+const axios = require('axios');
 
 class User {
     static async findAll() {
@@ -12,8 +13,17 @@ class User {
     }
 
     static async findById(id) {
-        const result = await pool.query('SELECT * FROM users WHERE id = $1 AND delete_at IS NULL', [id]);
-        return result.rows[0];
+        try {
+            const result = await pool.query('SELECT * FROM users WHERE id = $1 AND delete_at IS NULL', [id]);
+            const userData = result.rows[0];
+            const authUserId = userData.auth_user_id;
+            const response = await axios.get(`http://auth-service:3000/api/auth/by/${authUserId}`);
+            const authData = response.data;
+            return { user: userData, auth: authData };
+        } catch (error) {
+            console.error('Error al buscar usuarios:', error);
+            throw new Error('Error al buscar usuarios en la base de datos');
+        }
     }
 
     static async findByUserName(name) {

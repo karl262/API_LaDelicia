@@ -18,9 +18,11 @@ class UserController {
             if (!user) {
                 return res.status(404).json({ message: "Usuario no encontrado" });
             }
-            res.json(user);
+            const { user: userData, auth: authData } = user;
+            res.json({ userData, authData });
         } catch (error) {
-            res.status(500).json({ error: error.message });
+            console.error('Error al buscar usuarios:', error);
+            res.status(500).json({ error: 'Error al buscar usuarios en la base de datos' });
         }
     }
 
