@@ -5,6 +5,37 @@ const { validateJwtToken } = require('../middlewares/authMiddleware');
 
 class authController{
 
+  static async getaAuthByid (req, res) {
+    const { id } = req.params;
+    try{
+      const user = await authModel.getaAuthByid(id);
+      if (!user) {
+        return res.status(404).json({ error: 'Usuario no encontrado' });
+      }
+      res.json(user);
+    }catch(error) {
+      res.status(500).json({ error: 'Error al obtener el usuario' });
+    }
+  }
+
+  //metodo para reguistrar un nuevo usuario 
+  static async register (req, res) {
+    try {
+      const { username, email, password } = req.body;
+
+      if (!username && !email && !password) {
+        return res.status(400).json({ error: 'Se requieren todos los datos nombre se usuario, email, contraseña' });
+      }
+      
+      const user = await authModel.register(email, username, password);
+      res.status(201).json({ message: 'Usuario registrado exitosamente', user });
+      
+    }catch (error) {
+      res.status(500).json({ error: 'Error al registrar el usuario' });
+    }
+  }
+
+    //modificaciones login
     static async login(req, res) {
         try {
           const { username, email, password } = req.body;

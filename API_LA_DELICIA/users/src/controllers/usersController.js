@@ -18,9 +18,11 @@ class UserController {
             if (!user) {
                 return res.status(404).json({ message: "Usuario no encontrado" });
             }
-            res.json(user);
+            const { user: userData, auth: authData } = user;
+            res.json({ userData, authData });
         } catch (error) {
-            res.status(500).json({ error: error.message });
+            console.error('Error al buscar usuarios:', error);
+            res.status(500).json({ error: 'Error al buscar usuarios en la base de datos' });
         }
     }
 
@@ -51,9 +53,9 @@ class UserController {
             return res.status(400).json({ errors: errors.array() });
         }
 
-        const { first_name, last_name, date_of_birth, phone_number, preferred_payment_method } = req.body;
+        const { first_name, last_name, date_of_birth, phone_number, preferred_payment_method, auth_user_id } = req.body;
         try {
-            const newUser = await User.create(first_name, last_name, date_of_birth, phone_number, preferred_payment_method);
+            const newUser = await User.create(first_name, last_name, date_of_birth, phone_number, preferred_payment_method, auth_user_id);
             res.status(201).json(newUser);
         } catch (error) {
             res.status(500).json({ error: error.message });
