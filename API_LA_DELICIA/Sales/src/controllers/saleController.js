@@ -3,6 +3,30 @@ const Sale = require('../models/saleModel');
 const SaleDetail = require('../models/detailSaleModel'); 
 
 class SaleController {
+    static async createFromOrder(req, res) {
+        try {
+          const { order, employeeId } = req.body;
+    
+          if (!order || !employeeId) {
+            throw new Error('Datos incompletos para crear la venta');
+          }
+    
+          const saleId = await SaleModel.createFromOrder(order, employeeId);
+    
+          res.status(200).json({
+            success: true,
+            saleId,
+            message: 'Venta creada exitosamente'
+          });
+    
+        } catch (error) {
+          res.status(400).json({
+            success: false,
+            message: error.message
+          });
+        }
+    }
+    
     static async createSale(req, res) {
         const { total, discount, details } = req.body; 
         const client = await pool.connect();
