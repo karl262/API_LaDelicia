@@ -18,9 +18,11 @@ class UserController {
             if (!user) {
                 return res.status(404).json({ message: "Usuario no encontrado" });
             }
-            res.json(user);
+            const { user: userData, auth: authData } = user;
+            res.json({ userData, authData });
         } catch (error) {
-            res.status(500).json({ error: error.message });
+            console.error('Error al buscar usuarios:', error);
+            res.status(500).json({ error: 'Error al buscar usuarios en la base de datos' });
         }
     }
 
@@ -37,8 +39,11 @@ class UserController {
     }
 
     static validateCreateUser = [
-        body('name').notEmpty().withMessage('El nombre es requerido'),
-        body('email').isEmail().withMessage('Email inválido'),
+        body('first_name').notEmpty().withMessage('El nombre es requerido'),
+        body('last_name').notEmpty().withMessage('El apellido es requerido'),
+        body('date_of_birth').notEmpty().withMessage('La fecha de nacimiento es requerida'),
+        body('phone_number').notEmpty().withMessage('El número de teléfono es requerido'),
+        body('preferred_payment_method').notEmpty().withMessage('El método de pago es requerido')
         // Añade más validaciones según sea necesario
     ];
 
@@ -48,9 +53,9 @@ class UserController {
             return res.status(400).json({ errors: errors.array() });
         }
 
-        const { name, email } = req.body;
+        const { first_name, last_name, date_of_birth, phone_number, preferred_payment_method, auth_user_id } = req.body;
         try {
-            const newUser = await User.create(name, email);
+            const newUser = await User.create(first_name, last_name, date_of_birth, phone_number, preferred_payment_method, auth_user_id);
             res.status(201).json(newUser);
         } catch (error) {
             res.status(500).json({ error: error.message });
@@ -58,9 +63,9 @@ class UserController {
     }
 
     static async updateUser(req, res) {
-        const { name, email } = req.body;
+        const { first_name, last_name, date_of_birth, phone_number, preferred_payment_method } = req.body;
         try {
-            const updatedUser = await User.update(req.params.id, name, email);
+            const updatedUser = await User.update(req.params.id, first_name, last_name, date_of_birth, phone_number, preferred_payment_method);
             if (!updatedUser) {
                 return res.status(404).json({ message: "Usuario no encontrado" });
             }
