@@ -1,7 +1,8 @@
-const express = require('express');
-const productsRoutes = require('./src/routes/productsRoutes');
+import {express} from 'express';
+import {productsRoutes} from './src/routes/productsRoutes';
+import{dotenv} from 'dotenv';
 
-require('dotenv').config();
+dotenv.config();
 
 const app = express();
 app.use(express.json());
