@@ -1,4 +1,5 @@
-const pool = require('../config/db');
+import { pool} from '../config/db';
+
 
 class Employee {
 
@@ -45,4 +46,4 @@ class Employee {
     }
 }
 
-module.exports = Employee;
+export default Employee;
