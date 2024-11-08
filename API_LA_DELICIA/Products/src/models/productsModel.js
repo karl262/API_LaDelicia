@@ -1,4 +1,4 @@
-const pool = require('../config/db');
+import { pool } from '../config/db';
 
 class Product {
 
@@ -59,4 +59,4 @@ class Product {
     }
 }
 
-module.exports = Product;
+export default Product;
