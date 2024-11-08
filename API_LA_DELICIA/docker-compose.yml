@@ -1,4 +1,20 @@
 services:
+
+  # Balanceador de carga HAProxy
+  haproxy:
+    image: haproxy:2.4
+    ports:
+      - "3100:80"  # Expone el puerto 80 para acceso externo
+    volumes:
+      - ./haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg  # Archivo de configuración de HAProxy
+    depends_on:
+      - auth-service
+      - user-service
+      - product-service
+      - employee-service
+      - sale-service
+      - order-service
+
   auth-service:
     build: ./Auths
     command: npm run dev

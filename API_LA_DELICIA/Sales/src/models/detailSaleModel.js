@@ -1,4 +1,4 @@
-const pool = require('../config/db');
+const pool = require('../config/db.js');
 
 class DetailSale {
     static async create(saleId, quantity) { 

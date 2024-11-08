@@ -1,8 +1,9 @@
-const express = require('express');
+import express from 'express';
+import { authMiddleware } from '../middlewares/auth.js';
+import OrderController from '../controllers/orderController.js';
+
 const router = express.Router();
-const { validateToken } = require('../middleware/authMiddleware');
-const OrderController = require('../controllers/orderController');
+    
+router.post( '/convert-to-sale/:orderId', authMiddleware, OrderController.convertOrderToSale);
 
-router.post( '/convert-to-sale/:orderId', validateToken,OrderController.convertOrderToSale);
-
-module.exports = router;
+export default router;
