@@ -1,4 +1,4 @@
-const Employee = require('../models/employeeModel');
+import { Employee } from '../models/employeeModel';
 
 class EmployeeController {
 
@@ -71,4 +71,4 @@ class EmployeeController {
     }
 }
 
-module.exports = EmployeeController;
+export default EmployeeController;
