@@ -1,16 +1,16 @@
 const express = require('express');
-const SaleController = require('../controllers/saleController');
-const AuthMiddleware = require('../middlewares/auth')
+const SaleController = require('../controllers/saleController.js');
+const AuthMiddleware = require('../middlewares/auth.js')
 
 const router = express.Router();
 
 router.use(AuthMiddleware.authMiddleware);
 
-router.post('/sales', SaleController.createSale);
-router.get('/sales', SaleController.getSales);
-router.get('/sales/:id', SaleController.getSaleById);
-router.put('/sales/:id', SaleController.updateSale);
-router.delete('/sales/:id', SaleController.deleteSale);
-router.post('/sales/create-from-order', validateToken,SaleController.createFromOrder);
+router.post('/create/sale', SaleController.createSale);
+router.get('/get/sales', SaleController.getSales);
+router.get('/get/sales/by/id/:id', SaleController.getSaleById);
+router.put('/update/sale/:id', SaleController.updateSale);
+router.delete('/delete/sale/:id', SaleController.deleteSale);
+router.post('/create-from-order', validateToken,SaleController.createFromOrder);
 
 module.exports = router;

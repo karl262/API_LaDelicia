@@ -6,12 +6,12 @@ const router = express.Router();
 
 router.use(AuthMiddleware.authMiddleware);
 
-router.get('/users', UserController.getAllUsers);
-router.get('/users/:id', UserController.getUserById);
-router.get('/users/name/:user_name', UserController.getUserByUserName);
-router.post('/users', UserController.createUser);
-router.put('/users/:id', UserController.updateUser);
-router.delete('/users/:id', UserController.deleteUser);
+router.get('/get/users', UserController.getAllUsers);
+router.get('/get/users/by/id/:id', UserController.getUserById);
+router.get('/get/users/by/username/:user_name', UserController.getUserByUserName);
+router.post('/create/user', UserController.createUser);
+router.put('/update/user/:id', UserController.updateUser);
+router.delete('delete/user/:id', UserController.deleteUser);
 
 module.exports = router;
 

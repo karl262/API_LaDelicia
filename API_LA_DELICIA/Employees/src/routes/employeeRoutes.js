@@ -6,11 +6,11 @@ const router = express.Router();
 
 router.use(AuthMiddleware.authMiddleware);
 
-router.get('/employees', EmployeeController.getAllEmployees);
-router.get('/employees/:id', EmployeeController.getEmployeeById);
-router.get('/employees/name/:name', EmployeeController.getEmployeeByName); 
-router.post('/employees', EmployeeController.createEmployee);
-router.put('/employees/:id', EmployeeController.updateEmployee);
-router.delete('/employees/:id', EmployeeController.deleteEmployee);
+router.get('/get/employees', EmployeeController.getAllEmployees);
+router.get('/get/employees/by/id/:id', EmployeeController.getEmployeeById);
+router.get('/get/employees/by/name/:name', EmployeeController.getEmployeeByName); 
+router.post('/create/employee', EmployeeController.createEmployee);
+router.put('/update/employee/:id', EmployeeController.updateEmployee);
+router.delete('/delete/employees/:id', EmployeeController.deleteEmployee);
 
 module.exports = router;

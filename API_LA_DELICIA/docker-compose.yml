@@ -1,4 +1,20 @@
 services:
+
+  # Balanceador de carga HAProxy
+  haproxy:
+    image: haproxy:2.4
+    ports:
+      - "3100:80"  # Expone el puerto 80 para acceso externo
+    volumes:
+      - ./haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg  # Archivo de configuración de HAProxy
+    depends_on:
+      - auth-service
+      - user-service
+      - product-service
+      - employee-service
+      - sale-service
+      - order-service
+
   auth-service:
     build: ./Auths
     command: npm run dev
@@ -73,6 +89,22 @@ services:
     depends_on:
       - sale-db
       - auth-service
+  
+  order-service:
+    build: ./Orders
+    command: npm run dev
+    ports:
+      - "3006:3000"
+    environment:
+      - DB_HOST=sale-db
+      - DB_USER=user
+      - DB_PASSWORD=password
+      - DB_NAME=sale_db
+      - AUTH_SERVICE_URL=http://auth-service:3000
+      - SALES_SERVICE_URL=http://sales-service:3001
+    depends_on:
+      - sale-db
+      - auth-service
 
   auth-db:
     image: postgres:13
@@ -128,3 +160,14 @@ services:
       - "5437:5432"
     volumes:
       - ./Sales/db-init:/docker-entrypoint-initdb.d  # Carpeta de inicialización para sale-db
+
+  order-db:
+    image: postgres:13
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=order_db
+    ports:
+      - "5438:5432"
+    volumes:
+      - ./Orders/db-init:/docker-entrypoint-initdb.d  # Carpeta de inicialización para order-db

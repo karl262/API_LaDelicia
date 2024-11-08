@@ -1,4 +1,4 @@
-const pool = require('../config/db');
+import pool from '../config/db.js';
 
 class OrderModel {
 
@@ -46,7 +46,7 @@ class OrderModel {
         UPDATE orders 
         SET converted_to_sale = true, 
             saleid = $1,
-            status = 'recogido',
+            status = 'entregado',
             updated_at = CURRENT_TIMESTAMP
         WHERE id = $2 AND delete_at IS NULL
         RETURNING *
@@ -56,4 +56,4 @@ class OrderModel {
     }
 }
 
-module.exports = Order; 
+export default OrderModel;

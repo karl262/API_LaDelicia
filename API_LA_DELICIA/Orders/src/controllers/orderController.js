@@ -1,11 +1,11 @@
-const User = require('../models/usersMoldel');
-const { body, validationResult } = require('express-validator');
+import OrderModel from '../models/orderModels.js';
+import pool from '../config/db.js';
+const client = await pool.connect();
 
 class OrderController {
     static async convertOrderToSale(req, res) {
       const { orderId } = req.params;
-      const pool = require('../config/database');
-      const client = await pool.connect();
+      
   
       try {
         await client.query('BEGIN');
@@ -16,7 +16,7 @@ class OrderController {
           throw new Error('Pedido no encontrado');
         }
   
-        if (order.status !== 'listo para recoger' || order.converted_to_sale) {
+        if (order.status !== 'listo para entregar' || order.converted_to_sale) {
           throw new Error('Pedido no válido para conversión a venta');
         }
   
@@ -58,4 +58,4 @@ class OrderController {
     }
   }
 
-module.exports = OrderController;
+export default OrderController;

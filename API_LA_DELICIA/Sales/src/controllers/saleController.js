@@ -1,6 +1,6 @@
-const pool = require('../config/db'); 
-const Sale = require('../models/saleModel');
-const SaleDetail = require('../models/detailSaleModel'); 
+const pool = require('../config/db.js'); 
+const Sale = require('../models/saleModel.js');
+const SaleDetail = require('../models/detailSaleModel.js'); 
 
 class SaleController {
     static async createFromOrder(req, res) {
