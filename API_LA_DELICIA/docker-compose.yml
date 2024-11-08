@@ -97,7 +97,7 @@ services:
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=auth_db
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - ./Auths/db-init:/docker-entrypoint-initdb.d  # Carpeta de inicialización para auth-db
 
