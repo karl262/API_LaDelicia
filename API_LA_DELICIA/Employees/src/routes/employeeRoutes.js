@@ -1,6 +1,6 @@
-const express = require('express');
-const EmployeeController = require('../controllers/employeeController');
-const AuthMiddleware = require('../middlewares/auth');
+import {express} from 'express';
+import {EmployeeController} from '../controllers/employeeController';
+import {AuthMiddleware} from '../middlewares/auth';
 
 const router = express.Router();
 
@@ -13,4 +13,4 @@ router.post('/employees', EmployeeController.createEmployee);
 router.put('/employees/:id', EmployeeController.updateEmployee);
 router.delete('/employees/:id', EmployeeController.deleteEmployee);
 
-module.exports = router;
+export default router;
