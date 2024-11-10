@@ -1,4 +1,4 @@
-const axios = require('axios');
+const axios = require('../../../users/node_modules/axios/index.d.cts');
 
 const authMiddleware = async (req, res, next) => {
   const token = req.header('Authorization')?.replace('Bearer ', '');

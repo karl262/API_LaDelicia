@@ -1,12 +1,12 @@
 services:
-
-  # Balanceador de carga HAProxy
-  haproxy:
-    image: haproxy:2.4
+  lb:
+    image: haproxy:2.8
     ports:
-      - "3100:80"  # Expone el puerto 80 para acceso externo
+      - "3100:80"
     volumes:
-      - ./haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg  # Archivo de configuración de HAProxy
+      - ./haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    networks:
+      - app-network
     depends_on:
       - auth-service
       - user-service
@@ -14,12 +14,15 @@ services:
       - employee-service
       - sale-service
       - order-service
+    restart: unless-stopped
 
   auth-service:
     build: ./Auths
     command: npm run dev
     ports:
       - "3001:3000"
+    networks:
+      - app-network
     environment:
       - DB_HOST=auth-db
       - DB_USER=user
@@ -35,6 +38,8 @@ services:
     command: npm run dev
     ports:
       - "3002:3000"
+    networks:
+      - app-network
     environment:
       - DB_HOST=user-db
       - DB_USER=user
@@ -50,6 +55,8 @@ services:
     command: npm run dev
     ports:
       - "3003:3000"
+    networks:
+      - app-network
     environment:
       - DB_HOST=product-db
       - DB_USER=user
@@ -65,6 +72,8 @@ services:
     command: npm run dev
     ports:
       - "3004:3000"
+    networks:
+      - app-network
     environment:
       - DB_HOST=employee-db
       - DB_USER=user
@@ -74,12 +83,14 @@ services:
     depends_on:
       - employee-db
       - auth-service
-  
+
   sale-service:
     build: ./Sales
     command: npm run dev
     ports:
       - "3005:3000"
+    networks:
+      - app-network
     environment:
       - DB_HOST=sale-db
       - DB_USER=user
@@ -89,85 +100,91 @@ services:
     depends_on:
       - sale-db
       - auth-service
-  
+
   order-service:
     build: ./Orders
     command: npm run dev
     ports:
       - "3006:3000"
+    networks:
+      - app-network
     environment:
-      - DB_HOST=sale-db
+      - DB_HOST=order-db
       - DB_USER=user
       - DB_PASSWORD=password
-      - DB_NAME=sale_db
+      - DB_NAME=order_db
       - AUTH_SERVICE_URL=http://auth-service:3000
-      - SALES_SERVICE_URL=http://sales-service:3001
     depends_on:
-      - sale-db
+      - order-db
       - auth-service
 
+  # Databases
   auth-db:
     image: postgres:13
+    networks:
+      - app-network
     environment:
-      - POSTGRES_USER=user
-      - POSTGRES_PASSWORD=password
-      - POSTGRES_DB=auth_db
-    ports:
-      - "5432:5432"
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: auth_db
     volumes:
-      - ./Auths/db-init:/docker-entrypoint-initdb.d  # Carpeta de inicialización para auth-db
+      - ./Auths/db-init:/docker-entrypoint-initdb.d
 
   user-db:
     image: postgres:13
+    networks:
+      - app-network
     environment:
-      - POSTGRES_USER=user
-      - POSTGRES_PASSWORD=password
-      - POSTGRES_DB=user_db
-    ports:
-      - "5434:5432" 
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: user_db
     volumes:
-      - ./Users/db-init:/docker-entrypoint-initdb.d  # Carpeta de inicialización para user-db
+      - ./Users/db-init:/docker-entrypoint-initdb.d
 
   product-db:
     image: postgres:13
+    networks:
+      - app-network
     environment:
-      - POSTGRES_USER=user
-      - POSTGRES_PASSWORD=password
-      - POSTGRES_DB=product_db
-    ports:
-      - "5435:5432"
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: product_db
     volumes:
-      - ./Products/db-init:/docker-entrypoint-initdb.d  # Carpeta de inicialización para product-db
+      - ./Products/db-init:/docker-entrypoint-initdb.d
 
   employee-db:
     image: postgres:13
+    networks:
+      - app-network
     environment:
-      - POSTGRES_USER=user
-      - POSTGRES_PASSWORD=password
-      - POSTGRES_DB=employee_db
-    ports:
-      - "5436:5432"
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: employee_db
     volumes:
-      - ./Employees/db-init:/docker-entrypoint-initdb.d  # Carpeta de inicialización para employee-db
+      - ./Employees/db-init:/docker-entrypoint-initdb.d
 
   sale-db:
     image: postgres:13
+    networks:
+      - app-network
     environment:
-      - POSTGRES_USER=user
-      - POSTGRES_PASSWORD=password
-      - POSTGRES_DB=sale_db
-    ports:
-      - "5437:5432"
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: sale_db
     volumes:
-      - ./Sales/db-init:/docker-entrypoint-initdb.d  # Carpeta de inicialización para sale-db
+      - ./Sales/db-init:/docker-entrypoint-initdb.d
 
   order-db:
     image: postgres:13
+    networks:
+      - app-network
     environment:
-      - POSTGRES_USER=user
-      - POSTGRES_PASSWORD=password
-      - POSTGRES_DB=order_db
-    ports:
-      - "5438:5432"
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: order_db
     volumes:
-      - ./Orders/db-init:/docker-entrypoint-initdb.d  # Carpeta de inicialización para order-db
+      - ./Orders/db-init:/docker-entrypoint-initdb.d
+
+networks:
+  app-network:
+    driver: bridge
