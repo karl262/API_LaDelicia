@@ -13,4 +13,9 @@ router.post('/create/employee', EmployeeController.createEmployee);
 router.put('/update/employee/:id', EmployeeController.updateEmployee);
 router.delete('/delete/employees/:id', EmployeeController.deleteEmployee);
 
+
+router.get('/health', (req, res) => {
+    res.status(200).json({ status: 'OK', service: 'employee-service' });
+});
+
 module.exports = router;

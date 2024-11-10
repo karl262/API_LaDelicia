@@ -15,4 +15,8 @@ router.post('/create/product', ProductController.createProduct);
 router.put('/update/product/:id', ProductController.updateProduct);
 router.delete('/delete/product/:id', ProductController.deleteProduct);
 
+router.get('/health', (req, res) => {
+    res.status(200).json({ status: 'OK', service: 'product-service' });
+});
+
 module.exports = router;

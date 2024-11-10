@@ -9,9 +9,10 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
-app.use('api/oreders',orderRoutes);
+
+app.use('/api/oreders',orderRoutes);
 
 const port = process.env.PORT || 3000;
-app.listen(port, () => {
+app.listen(port,'0.0.0.0', () => {
   console.log(`Servidor escuchando en puerto ${port}`);
 });
