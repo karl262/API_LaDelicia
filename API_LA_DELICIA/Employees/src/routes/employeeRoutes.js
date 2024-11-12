@@ -1,10 +1,10 @@
-import {express} from 'express';
-import {EmployeeController} from '../controllers/employeeController';
-import {AuthMiddleware} from '../middlewares/auth';
+import express from 'express';
+import EmployeeController from '../controllers/employeeController.js';  
+import authMiddleware from '../middlewares/auth.js';  
 
-const router = express.Router();
+export const router = express.Router();
 
-router.use(AuthMiddleware.authMiddleware);
+router.use(authMiddleware);
 
 router.get('/employees', EmployeeController.getAllEmployees);
 router.get('/employees/:id', EmployeeController.getEmployeeById);
