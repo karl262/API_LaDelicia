@@ -18,7 +18,7 @@ class Product {
     }
 
     static async findByPrice(price) {
-        const result = await pool.query('SELECT * FROM products WHERE price = $1 AND delete_at IS NULL', [price]);
+        const result = await pool.query('SELECT * FROM products WHERE price_product = $1 AND delete_at IS NULL', [price]);
         return result.rows;
     }
 
@@ -33,19 +33,19 @@ class Product {
     }
 
     static async create(product) {
-        const { name, price, minimum_stock, maximum_stock, stock, sku } = product;
+        const { name_product, price_product, stock, ingredients, baking_time } = product; // Cambié los nombres de las propiedades
         const result = await pool.query(
-            'INSERT INTO products (name, price, minimum_stock, maximun_stock, stock, sku) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-            [name, price, minimum_stock, maximum_stock, stock, sku]
+            'INSERT INTO products (name_product, price_product, stock, ingredients, baking_time) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+            [name_product, price_product, stock, ingredients, baking_time]
         );
         return result.rows[0];
     }
 
     static async update(id, product) {
-        const { name, price, minimum_stock, maximum_stock, stock, sku } = product;
+        const { name_product, price_product, stock, ingredients, baking_time } = product; // Cambié los nombres de las propiedades
         const result = await pool.query(
-            'UPDATE products SET name = $1, price = $2, minimum_stock = $3, maximun_stock = $4, stock = $5, sku = $6, update_at = CURRENT_TIMESTAMP WHERE id = $7 RETURNING *',
-            [name, price, minimum_stock, maximum_stock, stock, sku, id]
+            'UPDATE products SET name_product = $1, price_product = $2, stock = $3, ingredients = $4, baking_time = $5, updated_at = CURRENT_TIMESTAMP WHERE id = $6 RETURNING *',
+            [name_product, price_product, stock, ingredients, baking_time, id]
         );
         return result.rows[0];
     }
