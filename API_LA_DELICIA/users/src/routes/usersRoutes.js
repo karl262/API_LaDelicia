@@ -1,10 +1,10 @@
-const express = require('express');
-const UserController = require('../controllers/usersController');
-const AuthMiddleware = require('../middlewares/auth');
+import express from 'express';
+import UserController from '../controllers/usersController.js';
+import authMiddleware from '../middlewares/auth.js';
 
-const router = express.Router();
+export const router = express.Router();
 
-router.use(AuthMiddleware.authMiddleware);
+router.use(authMiddleware);
 
 router.get('/users', UserController.getAllUsers);
 router.get('/users/:id', UserController.getUserById);
@@ -13,5 +13,5 @@ router.post('/users', UserController.createUser);
 router.put('/users/:id', UserController.updateUser);
 router.delete('/users/:id', UserController.deleteUser);
 
-module.exports = router;
+export default router;
 
