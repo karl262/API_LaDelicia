@@ -1,6 +1,6 @@
-import {Product} from '../models/productsModel';
+import {Product} from '../models/productsModel.js';
 
-class ProductController {
+export class ProductController {
 
     static async getAllProducts(req, res) {
         try {
