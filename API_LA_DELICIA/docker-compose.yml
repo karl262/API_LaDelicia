@@ -121,6 +121,8 @@ services:
   # Databases
   auth-db:
     image: postgres:13
+    ports:
+      - "5431:5432"
     networks:
       - app-network
     environment:
@@ -132,6 +134,8 @@ services:
 
   user-db:
     image: postgres:13
+    ports:
+      - "5434:5432"
     networks:
       - app-network
     environment:
@@ -143,6 +147,8 @@ services:
 
   product-db:
     image: postgres:13
+    ports:
+      - "5435:5432"
     networks:
       - app-network
     environment:
@@ -154,6 +160,8 @@ services:
 
   employee-db:
     image: postgres:13
+    ports:
+      - "5436:5432"
     networks:
       - app-network
     environment:
@@ -165,6 +173,8 @@ services:
 
   sale-db:
     image: postgres:13
+    ports:
+      - "5437:5432"
     networks:
       - app-network
     environment:
@@ -176,6 +186,8 @@ services:
 
   order-db:
     image: postgres:13
+    ports:
+      - "5438:5432"
     networks:
       - app-network
     environment:
