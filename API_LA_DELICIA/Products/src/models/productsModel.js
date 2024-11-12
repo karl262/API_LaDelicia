@@ -1,6 +1,6 @@
-import { pool } from '../config/db';
+import  pool  from '../config/db.js';
 
-class Product {
+export class Product {
 
     static async findAll() {
         const result = await pool.query('SELECT * FROM products WHERE delete_at IS NULL');
