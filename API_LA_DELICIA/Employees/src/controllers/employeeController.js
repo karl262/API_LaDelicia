@@ -1,6 +1,6 @@
-import { Employee } from '../models/employeeModel';
+import { Employee } from '../models/employeeModel.js';
 
-class EmployeeController {
+export class EmployeeController {
 
     static async getAllEmployees(req, res) {
         try {
