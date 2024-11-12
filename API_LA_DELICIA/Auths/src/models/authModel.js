@@ -1,7 +1,8 @@
-const bcrypt = require('bcryptjs');
-const pool = require('../config/db');
-
-class authModel {
+// const bcrypt = require('bcryptjs');
+// const pool = require('../config/db.js');
+import { pool } from '../config/db.js';
+import bcrypt from 'bcryptjs';
+export default class authModel {
   static async getaAuthByid(id) {
     const result = await pool.query('SELECT * FROM auth_user WHERE id = $1', [id]);
     return result.rows[0];
@@ -64,5 +65,5 @@ class authModel {
 
 }
 
-module.exports = authModel;
+// module.exports = authModel;
 
