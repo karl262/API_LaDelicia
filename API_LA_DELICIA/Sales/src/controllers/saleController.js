@@ -1,17 +1,16 @@
-const pool = require('../config/db.js'); 
-const Sale = require('../models/saleModel.js');
-const SaleDetail = require('../models/detailSaleModel.js'); 
+import { pool } from '../config/db.js';
+import SaleModel from '../models/saleModel.js';
+import DetailSale from '../models/detailSaleModel.js';
 
-class SaleController {
-    static async createFromOrder(req, res) {
+export default class SaleController {
+    static async createSaleFromOrder(req, res) {
         try {
-          const { order, employeeId } = req.body;
+          const { order } = req.body;
     
-          if (!order || !employeeId) {
+          if (!order) {
             throw new Error('Datos incompletos para crear la venta');
           }
-    
-          const saleId = await SaleModel.createFromOrder(order, employeeId);
+          const saleId = await SaleModel.createFromOrder(order);
     
           res.status(200).json({
             success: true,
@@ -35,16 +34,16 @@ class SaleController {
             await client.query('BEGIN'); 
 
             // Crear la venta
-            const sale = await Sale.create(total, discount); 
+            const sale = await SaleModel.create(total, discount); 
 
             // Crear los detalles de la venta
             const detailPromises = details.map(detail => 
-                SaleDetail.create(sale.id, detail.quantity) // Se asume que detail.quantity es un número
+                DetailSale.create(sale.id, detail.quantity) // Se asume que detail.quantity es un número
             );
             await Promise.all(detailPromises); // Esperar a que se creen todos los detalles
 
             await client.query('COMMIT'); 
-            res.status(201).json({ sale, details });
+            res.status(201).json({ SaleModel, details });
         } catch (error) {
             await client.query('ROLLBACK'); 
             res.status(500).json({ error: error.message });
@@ -55,7 +54,7 @@ class SaleController {
 
     static async getSales(req, res) {
         try {
-            const sales = await Sale.findAll();
+            const sales = await SaleModel.findAll();
             res.status(200).json(sales);
         } catch (error) {
             res.status(500).json({ error: error.message });
@@ -64,10 +63,10 @@ class SaleController {
 
     static async getSaleById(req, res) {
         try {
-            const sale = await Sale.findById(req.params.id);
+            const sale = await SaleModel.findById(req.params.id);
             if (sale) {
-                const details = await SaleDetail.findBySaleId(sale.id); // Obtener detalles de la venta
-                res.status(200).json({ sale, details });
+                const details = await DetailSale.findBySaleId(sale.id); // Obtener detalles de la venta
+                res.status(200).json({ SaleModel, details });
             } else {
                 res.status(404).json({ message: 'Venta no encontrada' });
             }
@@ -104,5 +103,3 @@ class SaleController {
         }
     }
 }
-
-module.exports = SaleController;

@@ -1,6 +1,5 @@
 import axios from 'axios';
-
-export const authMiddleware = async (req, res, next) => {
+const authMiddleware = async (req, res, next) => {
   const token = req.header('Authorization')?.replace('Bearer ', '');
 
   if (!token) {
@@ -22,3 +21,5 @@ export const authMiddleware = async (req, res, next) => {
     res.status(500).json({ message: 'Error interno del servidor' });
   }
 };
+
+export default authMiddleware;
