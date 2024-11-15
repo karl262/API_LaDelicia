@@ -27,18 +27,6 @@ class EmployeeController {
         try {
             const employees = await Employee.findByName(req.params.name);
             if (employees.length === 0) {
-                return res.status(404).json({ message: "Empleado no escontrado con este nombre" });
-            }
-            res.json(employees);
-        } catch (error) {
-            res.status(500).json({ error: error.message });
-        }
-    }
-
-    static async getEmployeeBySalary(req, res) {
-        try {
-            const employees = await Employee.findBySalary(req.params.salary);
-            if (employees.length === 0) {
                 return res.status(404).json({ message: "Empleado no encontrado con este nombre" });
             }
             res.json(employees);
@@ -48,9 +36,9 @@ class EmployeeController {
     }
 
     static async createEmployee(req, res) {
-        const { name, email, cellphone_number, salary } = req.body;
+        const { name_employee, middle_name, last_name, street_address, city_address, postal_code, cellphone_number } = req.body; // Eliminado userid
         try {
-            const newEmployee = await Employee.create(name, email, cellphone_number, salary);
+            const newEmployee = await Employee.create(name_employee, middle_name, last_name, street_address, city_address, postal_code, cellphone_number);
             res.status(201).json(newEmployee);
         } catch (error) {
             res.status(500).json({ error: error.message });
@@ -58,9 +46,9 @@ class EmployeeController {
     }
 
     static async updateEmployee(req, res) {
-        const { name, email, cellphone_number, salary } = req.body;
+        const { name_employee, middle_name, last_name, street_address, city_address, postal_code, cellphone_number } = req.body; // Eliminado userid
         try {
-            const updatedEmployee = await Employee.update(req.params.id, name, email, cellphone_number, salary);
+            const updatedEmployee = await Employee.update(req.params.id, name_employee, middle_name, last_name, street_address, city_address, postal_code, cellphone_number);
             if (!updatedEmployee) {
                 return res.status(404).json({ message: "Empleado no encontrado" });
             }

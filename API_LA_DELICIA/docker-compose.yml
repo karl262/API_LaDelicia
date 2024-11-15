@@ -1,0 +1,204 @@
+services:
+  lb:
+    image: haproxy:2.8
+    ports:
+      - "3100:80"
+    volumes:
+      - ./haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    networks:
+      - app-network
+    depends_on:
+      - auth-service
+      - user-service
+      - product-service
+      - employee-service
+      - sale-service
+      - order-service
+    restart: unless-stopped
+
+  auth-service:
+    build: ./Auths
+    command: npm run dev
+    ports:
+      - "3001:3000"
+    networks:
+      - app-network
+    environment:
+      - DB_HOST=auth-db
+      - DB_USER=user
+      - DB_PASSWORD=password
+      - DB_NAME=auth_db
+      - DB_PORT=5432
+      - JWT_SECRET=c99l108a97v118e101p112r114i105v118a97d100a97j106w119t116t116o111k107e101n110
+    depends_on:
+      - auth-db
+
+  user-service:
+    build: ./Users
+    command: npm run dev
+    ports:
+      - "3002:3000"
+    networks:
+      - app-network
+    environment:
+      - DB_HOST=user-db
+      - DB_USER=user
+      - DB_PASSWORD=password
+      - DB_NAME=user_db
+      - AUTH_SERVICE_URL=http://auth-service:3000
+    depends_on:
+      - user-db
+      - auth-service
+
+  product-service:
+    build: ./Products
+    command: npm run dev
+    ports:
+      - "3003:3000"
+    networks:
+      - app-network
+    environment:
+      - DB_HOST=product-db
+      - DB_USER=user
+      - DB_PASSWORD=password
+      - DB_NAME=product_db
+      - AUTH_SERVICE_URL=http://auth-service:3000
+    depends_on:
+      - product-db
+      - auth-service
+
+  employee-service:
+    build: ./Employees
+    command: npm run dev
+    ports:
+      - "3004:3000"
+    networks:
+      - app-network
+    environment:
+      - DB_HOST=employee-db
+      - DB_USER=user
+      - DB_PASSWORD=password
+      - DB_NAME=employee_db
+      - AUTH_SERVICE_URL=http://auth-service:3000
+    depends_on:
+      - employee-db
+      - auth-service
+
+  sale-service:
+    build: ./Sales
+    command: npm run dev
+    ports:
+      - "3005:3000"
+    networks:
+      - app-network
+    environment:
+      - DB_HOST=sale-db
+      - DB_USER=user
+      - DB_PASSWORD=password
+      - DB_NAME=sale_db
+      - AUTH_SERVICE_URL=http://auth-service:3000
+    depends_on:
+      - sale-db
+      - auth-service
+
+  order-service:
+    build: ./Orders
+    command: npm run dev
+    ports:
+      - "3006:3000"
+    networks:
+      - app-network
+    environment:
+      - DB_HOST=order-db
+      - DB_USER=user
+      - DB_PASSWORD=password
+      - DB_NAME=order_db
+      - AUTH_SERVICE_URL=http://auth-service:3000
+      - SALE_SERVICE_URL=http://sale-service:3000
+    depends_on:
+      - order-db
+      - auth-service
+      - sale-service
+
+  # Databases
+  auth-db:
+    image: postgres:13
+    ports:
+      - "5431:5432"
+    networks:
+      - app-network
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: auth_db
+    volumes:
+      - ./Auths/db-init:/docker-entrypoint-initdb.d
+
+  user-db:
+    image: postgres:13
+    ports:
+      - "5434:5432"
+    networks:
+      - app-network
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: user_db
+    volumes:
+      - ./Users/db-init:/docker-entrypoint-initdb.d
+
+  product-db:
+    image: postgres:13
+    ports:
+      - "5435:5432"
+    networks:
+      - app-network
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: product_db
+    volumes:
+      - ./Products/db-init:/docker-entrypoint-initdb.d
+
+  employee-db:
+    image: postgres:13
+    ports:
+      - "5436:5432"
+    networks:
+      - app-network
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: employee_db
+    volumes:
+      - ./Employees/db-init:/docker-entrypoint-initdb.d
+
+  sale-db:
+    image: postgres:13
+    ports:
+      - "5437:5432"
+    networks:
+      - app-network
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: sale_db
+    volumes:
+      - ./Sales/db-init:/docker-entrypoint-initdb.d
+
+  order-db:
+    image: postgres:13
+    ports:
+      - "5438:5432"
+    networks:
+      - app-network
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: order_db
+    volumes:
+      - ./Orders/db-init:/docker-entrypoint-initdb.d
+
+networks:
+  app-network:
+    driver: bridge
