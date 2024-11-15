@@ -110,10 +110,11 @@
 
 
 
-
 const express = require('express');
 const authController = require('../controllers/authController');
 const { validateDataLogin } = require('../middlewares/authValidation');
+const swaggerDocs = require('./src/config/swagger.js');  
+
 
 const router = express.Router();
 
@@ -121,6 +122,7 @@ router.get('/get/auth/by/:id', authController.getaAuthByid, authController.verif
 router.post('/register/auth/user', validateDataLogin, authController.register, authController.verifyToken);
 router.post('/login/user', validateDataLogin, authController.login);
 router.post('/verify-token', authController.verifyToken);
+router.get(swaggerDocs);
 
 router.get('/health', (req, res) => {
     res.status(200).json({
