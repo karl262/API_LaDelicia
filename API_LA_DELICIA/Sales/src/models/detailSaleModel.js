@@ -1,6 +1,6 @@
-const pool = require('../config/db.js');
+import { pool } from '../config/db.js';
 
-class DetailSale {
+export default class DetailSale {
     static async create(saleId, quantity) { 
         const result = await pool.query(
             'INSERT INTO detail_sale (saleid, quantity) VALUES ($1, $2) RETURNING *', 
@@ -24,5 +24,3 @@ class DetailSale {
         return result.rows[0];
     }
 }
-
-module.exports = DetailSale;

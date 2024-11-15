@@ -11,7 +11,7 @@ export default class User {
             
             const userData = result.rows;
             const authUserIds = userData.map(user => user.auth_user_id);
-            const responses = await Promise.all(authUserIds.map(authUserId => axios.get(`http://auth-service:3000/api/auth/by/${authUserId}`)));
+            const responses = await Promise.all(authUserIds.map(authUserId => axios.get(`http://auth-service:3000/api/auths/get/auth/by/${authUserId}`)));
             const authData = responses.map(response => response.data);
             const combinedData = userData.map((user, index) => ({ user, auth: authData[index] }));
             return combinedData;

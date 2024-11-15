@@ -7,12 +7,12 @@ create table if not exists payment_method (
   delete_at TIMESTAMP WITHOUT TIME ZONE
 );
 
-create table if not exists sale (
+create table if not exists sales (
   id bigint PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   orderid bigint not null unique,          -- Referencia al pedido original
   total numeric not null,
   discount numeric default 0,
-  final_total numeric not null,            -- total - discount
+  final_total numeric generated always as (total - discount) stored,  -- Calculated as total - discount
   clientid bigint not null,
   employeeid bigint not null,
   payment_methodid bigint not null,
@@ -20,24 +20,20 @@ create table if not exists sale (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   delete_at TIMESTAMP WITHOUT TIME ZONE,
-  FOREIGN KEY (orderid) REFERENCES orders (id),
-  FOREIGN KEY (clientid) REFERENCES client (id),
-  FOREIGN KEY (employeeid) REFERENCES employee (id),
   FOREIGN KEY (payment_methodid) REFERENCES payment_method (id)
 );
 
-create table if not exists detail_sale (
+create table if not exists sale_details (
   id bigint PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   saleid bigint not null,
   productid bigint not null,
   quantity int not null,
   price_at_sale numeric(10, 2) not null,   -- Precio al momento de la venta
-  subtotal numeric(10, 2) not null,        -- quantity * price_at_sale
+  subtotal numeric(10, 2) generated always as (quantity * price_at_sale) stored,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   delete_at TIMESTAMP WITHOUT TIME ZONE,
-  FOREIGN KEY (saleid) REFERENCES sale (id),
-  FOREIGN KEY (productid) REFERENCES products (id)
+  FOREIGN KEY (saleid) REFERENCES sales (id)
 );
 
 INSERT INTO payment_method (name_method, amount) VALUES ('Tarjeta de Crédito', 0);
