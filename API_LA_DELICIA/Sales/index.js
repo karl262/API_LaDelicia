@@ -4,6 +4,8 @@ import dotenv from 'dotenv';
 import swaggerDocs from './src/config/swagger.js';
 
 dotenv.config();
+
+
 const app = express();
 
 // Configuración de Swagger

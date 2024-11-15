@@ -218,6 +218,7 @@
  *       500:
  *         description: Internal server error
  */
+
 import express from 'express';
 import SaleController from '../controllers/saleController.js';
 import authMiddleware from '../middlewares/auth.js'

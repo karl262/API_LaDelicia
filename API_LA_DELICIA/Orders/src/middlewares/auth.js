@@ -1,5 +1,7 @@
 import axios from 'axios';
-const authMiddleware = async (req, res, next) => {
+
+export const authMiddleware = async (req, res, next) => {
+
   const token = req.header('Authorization')?.replace('Bearer ', '');
 
   if (!token) {
@@ -23,3 +25,4 @@ const authMiddleware = async (req, res, next) => {
 };
 
 export default authMiddleware;
+
