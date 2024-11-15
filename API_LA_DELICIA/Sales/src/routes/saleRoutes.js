@@ -1,9 +1,3 @@
-import express from 'express';
-import SaleController from '../controllers/saleController.js';
-import authMiddleware from '../middlewares/auth.js'
-
-const router = express.Router();
-
 /**
  * @swagger
  * components:
@@ -224,6 +218,12 @@ const router = express.Router();
  *       500:
  *         description: Internal server error
  */
+import express from 'express';
+import SaleController from '../controllers/saleController.js';
+import authMiddleware from '../middlewares/auth.js'
+
+const router = express.Router();
+
 router.use(authMiddleware);
 
 router.post('/create/sale', SaleController.createSale);
