@@ -1,20 +1,19 @@
-import dotenv from 'dotenv';
-dotenv.config();
-
 import express from 'express';
-import cors from 'cors';
+import setupSwagger from '../Orders/src/config/swagger.js';
 import orderRoutes from './src/routes/orderRoutes.js';
-import setupSwagger from './src/config/swagger.js';
 
 const app = express();
+const PORT = 3000;
 
-app.use(cors());
 app.use(express.json());
 
-app.use('/api/orders',orderRoutes);
+// Configurar Swagger
+setupSwagger(app);
 
-const port = process.env.PORT || 3000;
-app.listen(port, '0.0.0.0', () => {
-  console.log(`Servidor escuchando en puerto ${port}`);
-  console.log(`Documentación disponible en http://localhost:${port}/api-docs`);
+// Rutas de la API
+app.use('/api/orders', orderRoutes);
+
+app.listen(PORT, () => {
+  console.log(`Servidor escuchando en puerto ${PORT}`);
+  console.log(`Documentación disponible en http://localhost:${PORT}/api-docs`);
 });
