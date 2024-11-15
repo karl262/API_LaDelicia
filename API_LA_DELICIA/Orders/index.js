@@ -11,9 +11,9 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-setupSwagger(app); // Integrar Swagger
 
-app.use('/api/oreders', orderRoutes);
+setupSwagger(app); 
+app.use('/api/orders',orderRoutes);
 
 const port = process.env.PORT || 3000;
 app.listen(port, '0.0.0.0', () => {

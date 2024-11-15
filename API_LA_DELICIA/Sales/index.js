@@ -1,7 +1,9 @@
-const express = require('express');
-const saleRoutes = require('./src/routes/saleRoutes.js');
-const swaggerSetup = require('./src/config/swagger.js');
-require('dotenv').config();
+
+import express from 'express';
+import saleRoutes from './src/routes/saleRoutes.js';
+import dotenv from 'dotenv';
+dotenv.config();
+
 
 const app = express();
 app.use(express.json());
