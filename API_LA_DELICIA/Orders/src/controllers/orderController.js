@@ -71,16 +71,17 @@ class OrderController {
           }
       }
   
-  // Obtener todos los pedidos
-  static async getAllOrders(req, res) {
-    try {
-      const orders = await OrderModel.findAll(); // Usar el modelo correcto
-      res.status(200).json(orders);
-    } catch (error) {
-      console.error('Error al obtener todas las órdenes:', error.message);
-      res.status(500).json({ error: error.message });
-    }
+// Obtener todos los pedidos
+static async getAllOrders(req, res) {
+  try {
+    const orders = await OrderModel.findAll();
+    res.status(200).json(orders);
+  } catch (error) {
+    console.error('Error al obtener todas las órdenes:', error.message);
+    res.status(500).json({ error: 'Error al obtener todas las órdenes y sus datos relacionados' });
   }
+}
+
       
   
       // Obtener un pedido por ID
