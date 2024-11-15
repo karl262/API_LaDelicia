@@ -1,6 +1,7 @@
-const pool = require('../config/db');
+// import pool from '../config/db.js';
+import { pool } from '../config/db.js';
 
-class Employee {
+export default class Employee {
 
     static async findAll() {
         const result = await pool.query('SELECT * FROM employee WHERE delete_at IS NULL');
@@ -45,4 +46,4 @@ class Employee {
     }
 }
 
-module.exports = Employee;
+// export default Employee;

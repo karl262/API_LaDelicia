@@ -1,9 +1,10 @@
-const express = require('express');
-const ProductController = require('../controllers/productsController');
-const AuthMiddleware = require('../middlewares/auth');
-const router = express.Router();
+import express from 'express';
+import ProductController from '../controllers/productsController.js';
+import authMiddleware from '../middlewares/auth.js';  
 
-router.use(AuthMiddleware.authMiddleware);
+export const router = express.Router();
+
+router.use(authMiddleware);
 
 router.get('/get/products', ProductController.getAllProducts);
 router.get('/get/products/by/id/:id', ProductController.getProductById);
@@ -19,4 +20,4 @@ router.get('/health', (req, res) => {
     res.status(200).json({ status: 'OK', service: 'product-service' });
 });
 
-module.exports = router;
+export default router;
