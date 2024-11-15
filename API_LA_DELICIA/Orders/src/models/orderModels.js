@@ -58,96 +58,59 @@ class Order {
     }
 
 
+static async findAll() {
+  try {
+    // 1. Consultar todas las órdenes y sus detalles
+    const query = `
+      SELECT 
+        o.id, o.total, o.status, o.clientid, o.employeeid, o.payment_methodid, 
+        o.discount, o.converted_to_sale, o.saleid, 
+        o.order_date, o.estimated_completion_time, 
+        o.created_at, o.updated_at, o.delete_at,
+        od.id as order_detail_id, od.quantity, od.productsid, od.price_at_order, od.subtotal
+      FROM orders o
+      LEFT JOIN order_detail od ON o.id = od.orderid
+      WHERE o.delete_at IS NULL
+      ORDER BY o.created_at DESC;
+    `;
+    const { rows } = await pool.query(query);
 
+    if (rows.length === 0) return [];
 
-    //obtiene todos los pedidos con sus detalles(order detail)
-    static async findAll() {
-      try {
-        // 1. Consultar todas las órdenes y sus detalles
-        const query = `
-          SELECT o.*, od.* 
-          FROM orders o
-          LEFT JOIN order_detail od ON o.id = od.orderid
-          WHERE o.delete_at IS NULL
-          ORDER BY o.created_at DESC`;
-        const { rows } = await pool.query(query);
-        if (rows.length === 0) return [];
-        const ordersMap = this.groupOrders(rows);
-        const clientIds = [...new Set(rows.map(row => row.clientid))];
-        const employeeIds = [...new Set(rows.filter(row => row.employeeid).map(row => row.employeeid))];
-        const paymentMethodIds = [...new Set(rows.map(row => row.payment_methodid))];
-        const [clientsResponse, employeesResponse, paymentMethodsResponse] = await Promise.all([
-          axios.get(`http://client-service:3000/api/clients/by-ids`, { data: { ids: clientIds } }),
-          axios.get(`http://employee-service:3000/api/employees/by-ids`, { data: { ids: employeeIds } }),
-          axios.get(`http://payment-service:3000/api/payment-methods/by-ids`, { data: { ids: paymentMethodIds } })
-        ]);
-  
-        // 5. Mapear los resultados de las APIs externas a objetos más accesibles
-        const clientsData = this.mapById(clientsResponse.data);
-        const employeesData = this.mapById(employeesResponse.data);
-        const paymentMethodsData = this.mapById(paymentMethodsResponse.data);
-  
-        // 6. Enriquecer los datos de las órdenes con la información obtenida
-        const enrichedOrders = ordersMap.map(order => ({
-          ...order,
-          client: clientsData[order.clientid] || null,
-          employee: employeesData[order.employeeid] || null,
-          payment_method: paymentMethodsData[order.payment_methodid] || null
-        }));
-  
-        return enrichedOrders;
-      } catch (error) {
-        console.error('Error al obtener todas las órdenes:', error);
-        throw new Error('Error al obtener todas las órdenes y sus datos relacionados');
-      }
-    }
-  
-    // Agrupar las órdenes por su ID
-    static groupOrders(rows) {
-      const ordersMap = new Map();
-  
-      rows.forEach(row => {
-        if (!ordersMap.has(row.id)) {
-          ordersMap.set(row.id, {
-            id: row.id,
-            total: row.total,
-            status: row.status,
-            clientid: row.clientid,
-            employeeid: row.employeeid,
-            payment_methodid: row.payment_methodid,
-            discount: row.discount,
-            converted_to_sale: row.converted_to_sale,
-            saleid: row.saleid,
-            order_date: row.order_date,
-            estimated_completion_time: row.estimated_completion_time,
-            created_at: row.created_at,
-            updated_at: row.updated_at,
-            details: []
-          });
-        }
-  
-        const order = ordersMap.get(row.id);
-        if (row.orderid) {
-          order.details.push({
-            id: row.id,
-            quantity: row.quantity,
-            productsid: row.productsid,
-            price_at_order: row.price_at_order,
-            subtotal: row.subtotal
-          });
-        }
-      });
-  
-      return Array.from(ordersMap.values());
-    }
-  
-    // Utilidad para mapear resultados por ID
-    static mapById(dataArray) {
-      return dataArray.reduce((map, item) => {
-        map[item.id] = item;
-        return map;
-      }, {});
-    }
+    // Agrupar órdenes por ID
+    const ordersMap = this.groupOrders(rows);
+
+    // Obtener los IDs únicos de clientes, empleados y métodos de pago
+    const clientIds = [...new Set(rows.map(row => row.clientid))];
+    const employeeIds = [...new Set(rows.filter(row => row.employeeid).map(row => row.employeeid))];
+    const paymentMethodIds = [...new Set(rows.map(row => row.payment_methodid))];
+
+    // 2. Realizar las solicitudes externas para obtener datos adicionales
+    const [clients, employees, paymentMethods] = await Promise.all([
+      axios.post(`http://client-service:3000/api/clients/by-ids`, { ids: clientIds }),
+      axios.post(`http://employee-service:3000/api/employees/by-ids`, { ids: employeeIds }),
+      axios.post(`http://payment-service:3000/api/payment-methods/by-ids`, { ids: paymentMethodIds })
+    ]);
+
+    // Mapear los resultados
+    const clientsData = this.mapById(clients.data);
+    const employeesData = this.mapById(employees.data);
+    const paymentMethodsData = this.mapById(paymentMethods.data);
+
+    // Enriquecer las órdenes con la información adicional
+    return ordersMap.map(order => ({
+      ...order,
+      client: clientsData[order.clientid] || null,
+      employee: employeesData[order.employeeid] || null,
+      payment_method: paymentMethodsData[order.payment_methodid] || null
+    }));
+
+  } catch (error) {
+    console.error('Error al obtener todas las órdenes:', error.message);
+    throw new Error('Error al obtener todas las órdenes y sus datos relacionados');
+  }
+}
+
 
 
 //crear una orden
