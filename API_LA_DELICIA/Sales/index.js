@@ -1,10 +1,15 @@
 import express from 'express';
-import saleRoutes from './src/routes/saleRoutes.js';
+import saleRoutes from './src/routes/saleRoutes.js'
 import dotenv from 'dotenv';
+import swaggerDocs from './src/config/swagger.js';
+
 dotenv.config();
 
+
 const app = express();
-app.use(express.json());
+
+// Configuración de Swagger
+swaggerDocs(app);
 
 // Rutas de ventas
 app.use('/api/sales', saleRoutes);
