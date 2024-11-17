@@ -219,6 +219,47 @@
  *         description: Internal server error
  */
 
+/**
+ * @swagger
+ * /create-from-order:
+ *   post:
+ *     summary: Crear una venta desde un pedido
+ *     tags: [Sales]
+ *     security:
+ *       - BearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               orderid:
+ *                 type: integer
+ *                 description: ID del pedido
+ *                 example: 1
+ *     responses:
+ *       201:
+ *         description: Venta creada exitosamente
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: Venta creada exitosamente
+ *               saleId: 45
+ *       400:
+ *         description: Bad request, missing data
+ *         content:
+ *           application/json:
+ *             example:
+ *               error: 'Todos los campos son obligatorios'
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             example:
+ *               error: 'Error al crear la venta'
+ */
+
 import express from 'express';
 import SaleController from '../controllers/saleController.js';
 import authMiddleware from '../middlewares/auth.js'

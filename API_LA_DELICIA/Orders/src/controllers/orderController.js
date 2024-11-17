@@ -2,53 +2,53 @@ import OrderModel from '../models/orderModels.js';
 import axios from 'axios';
 
 class OrderController {
-    static async convertOrderToSale(req, res) {
-        const { orderId } = req.params;
+  static async convertOrderToSale(req, res) {
+    const { orderId } = req.params;
 
-        try {
-            // Iniciar transacción
-            await OrderModel.beginTransaction();
+    try {
+        // Iniciar transacción
+        await OrderModel.beginTransaction();
 
-            // Validar pedido
-            const order = await OrderModel.getOrderById(orderId);
-            if (!order) throw new Error('Pedido no encontrado');
-            if (order.status !== 'listo para recoger') {
-                throw new Error('El estado del pedido no es "listo para recoger"');
-            }
-            if (order.converted_to_sale) {
-                throw new Error('El pedido ya ha sido convertido a venta');
-            }
-
-            // Llamada al microservicio de ventas
-            const saleResponse = await axios.post(
-                'http://sale-service:3000/api/sales/create-from-order',
-                { order },
-                { headers: { 'Authorization': req.headers.authorization } }
-            );
-
-            const { saleId } = saleResponse.data;
-
-            if (!saleId) throw new Error('No se obtuvo el ID de la venta');
-
-            // Actualizar el pedido como vendido
-            await OrderModel.markOrderAsSold(orderId, saleId);
-
-            // Confirmar transacción
-            await OrderModel.commitTransaction();
-
-            res.status(200).json({
-                success: true,
-                message: 'Pedido convertido a venta exitosamente',
-                saleId
-            });
-        } catch (error) {
-            await OrderModel.rollbackTransaction();
-            res.status(400).json({
-                success: false,
-                message: error.response?.data?.message || error.message
-            });
+        // Validar pedido
+        const order = await OrderModel.getOrderById(orderId);
+        if (!order) throw new Error('Pedido no encontrado');
+        if (order.status !== 'listo para recoger') {
+            throw new Error('El estado del pedido no es "listo para recoger"');
         }
+        if (order.converted_to_sale) {
+            throw new Error('El pedido ya ha sido convertido a venta');
+        }
+
+        // Llamada al microservicio de ventas
+        const saleResponse = await axios.post(
+            'http://sale-service:3000/api/sales/create-from-order',
+            { order },
+            { headers: { 'Authorization': req.headers.authorization } }
+        );
+
+        const { saleId } = saleResponse.data;
+
+        if (!saleId) throw new Error('No se obtuvo el ID de la venta');
+
+        // Actualizar el pedido como vendido
+        await OrderModel.markOrderAsSold(orderId, saleId);
+
+        // Confirmar transacción
+        await OrderModel.commitTransaction();
+
+        res.status(200).json({
+            success: true,
+            message: 'Pedido convertido a venta exitosamente',
+            saleId
+        });
+    } catch (error) {
+        await OrderModel.rollbackTransaction();
+        res.status(400).json({
+            success: false,
+            message: error.response?.data?.message || error.message
+        });
     }
+}
   
     static async createOrder(req, res) {
     const { clientid, employeeid, payment_methodid, total, details } = req.body;
