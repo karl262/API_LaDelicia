@@ -1,7 +1,7 @@
-const axios = require('axios');
+import  axios  from 'axios';
 
 const authMiddleware = async (req, res, next) => {
-  const token = req.header('Authorization')?.replace('Bearer ', '');
+    const token = req.header('Authorization')?.replace('Bearer ', '');
 
   if (!token) {
     return res.status(401).json({ message: 'No se proporcionó token de autenticación' });
@@ -23,4 +23,4 @@ const authMiddleware = async (req, res, next) => {
   }
 };
 
-module.exports = { authMiddleware };
+export default authMiddleware;
