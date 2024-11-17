@@ -22,5 +22,3 @@ export const authMiddleware = async (req, res, next) => {
     res.status(500).json({ message: 'Error interno del servidor' });
   }
 };
-
-export default authMiddleware;

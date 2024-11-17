@@ -1,4 +1,3 @@
-// import { Employee } from '../models/employeeModel.js';
 import Employee from '../models/employeeModel.js';
 export default class EmployeeController {
 
@@ -70,5 +69,3 @@ export default class EmployeeController {
         }
     }
 }
-
-// export default EmployeeController;   

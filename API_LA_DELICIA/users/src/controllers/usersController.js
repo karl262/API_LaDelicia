@@ -88,5 +88,3 @@ export default class UserController {
     }
 
 }
-
-// export default UserController;
