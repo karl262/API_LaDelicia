@@ -12,10 +12,7 @@ create table if not exists orders (
   estimated_completion_time TIMESTAMP WITH TIME ZONE,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-  delete_at TIMESTAMP WITHOUT TIME ZONE,
-  foreign key (clientid) references client (id),
-  foreign key (employeeid) references employee (id),
-  foreign key (payment_methodid) references payment_method (id)
+  delete_at TIMESTAMP WITHOUT TIME ZONE
 );
 
 create table if not exists order_detail (
@@ -24,10 +21,9 @@ create table if not exists order_detail (
   orderid bigint not null,
   productsid bigint not null,
   price_at_order numeric(10, 2) not null,  -- Precio al momento del pedido
-  subtotal numeric(10, 2) not null,        -- quantity * price_at_order
+  subtotal numeric(10, 2) generated always as (quantity * price_at_order) stored,  -- Calculado como quantity * price_at_order
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   delete_at TIMESTAMP WITHOUT TIME ZONE,
-  foreign key (orderid) references orders (id),
-  foreign key (productsid) references products (id)
+  foreign key (orderid) references orders (id)
 );
