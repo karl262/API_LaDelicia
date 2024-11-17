@@ -3,6 +3,7 @@ dotenv.config();
 import express from 'express';
 import bodyParser from 'body-parser';
 import authRoutes from './src/routes/authRoutes.js';
+import swaggerDocs from './src/config/swagger.js';
 
 const app = express();
 

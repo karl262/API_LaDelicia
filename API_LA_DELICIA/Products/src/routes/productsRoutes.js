@@ -304,7 +304,7 @@ import express from 'express';
 import ProductController from '../controllers/productsController.js';
 import authMiddleware from '../middlewares/auth.js';  
 
-export const router = express.Router();
+const router = express.Router();
 
 router.use(authMiddleware);
 
@@ -321,3 +321,5 @@ router.delete('/delete/product/:id', ProductController.deleteProduct);
 router.get('/health', (req, res) => {
     res.status(200).json({ status: 'OK', service: 'product-service' });
 });
+
+export default router;
