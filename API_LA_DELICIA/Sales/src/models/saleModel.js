@@ -1,47 +1,47 @@
 import { pool } from '../config/db.js';
 
 export default class Sale {
-  static async createFromOrder(order) {
-    const client = await pool.connect();
-    try {
-        await client.query('BEGIN');
-
-        const saleQuery = `
-            INSERT INTO sales (orderid, total, clientid, employeeid, payment_methodid)
-            VALUES ($1, $2, $3, $4, $5)
-            RETURNING id
-        `;
-        const { rows } = await client.query(saleQuery, [
-            order.id,
-            order.total,
-            order.clientid,
-            order.employeeid,
-            order.payment_methodid,
-        ]);
-        const saleId = rows[0].id;
-
-        for (const detail of order.details) {
-            const detailQuery = `
-                INSERT INTO sale_details (saleid, productid, quantity, price_at_sale)
-                VALUES ($1, $2, $3, $4)
+    static async createFromOrder(order) {
+        const client = await pool.connect();
+        try {
+            await client.query('BEGIN');
+    
+            const saleQuery = `
+                INSERT INTO sales (orderid, total, clientid, employeeid, payment_methodid)
+                VALUES ($1, $2, $3, $4, $5)
+                RETURNING id
             `;
-            await client.query(detailQuery, [
-                saleId,
-                detail.productsid,
-                detail.quantity,
-                detail.price_at_order
+            const { rows } = await client.query(saleQuery, [
+                order.id,
+                order.total,
+                order.clientid,
+                order.employeeid,
+                order.payment_methodid,
             ]);
+            const saleId = rows[0].id;
+    
+            for (const detail of order.details) {
+                const detailQuery = `
+                    INSERT INTO sale_details (saleid, productid, quantity, price_at_sale)
+                    VALUES ($1, $2, $3, $4)
+                `;
+                await client.query(detailQuery, [
+                    saleId,
+                    detail.productsid,
+                    detail.quantity,
+                    detail.price_at_order
+                ]);
+            }
+    
+            await client.query('COMMIT');
+            return saleId;
+        } catch (error) {
+            await client.query('ROLLBACK');
+            throw error;
+        } finally {
+            client.release();
         }
-
-        await client.query('COMMIT');
-        return saleId;
-    } catch (error) {
-        await client.query('ROLLBACK');
-        throw error;
-    } finally {
-        client.release();
-    }
-  }
+      }    
 
     static async findAll() {
         const result = await pool.query('SELECT * FROM sales WHERE delete_at IS NULL'); // Filtrar eliminados

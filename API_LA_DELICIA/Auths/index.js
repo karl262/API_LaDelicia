@@ -1,10 +1,12 @@
 require('dotenv').config();
+const swaggerDocs = require('./src/config/swagger.js');    
 const express = require('express');
 const bodyParser = require('body-parser');
-const authRoutes = require('./src/routes/authRoutes');
+const authRoutes = require('./src/routes/authRoutes.js');
 
 const app = express();
 
+swaggerDocs(app);
 app.use(bodyParser.json());
 app.use('/api/auths', authRoutes);
 
