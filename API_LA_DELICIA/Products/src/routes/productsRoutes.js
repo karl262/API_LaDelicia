@@ -321,5 +321,3 @@ router.delete('/delete/product/:id', ProductController.deleteProduct);
 router.get('/health', (req, res) => {
     res.status(200).json({ status: 'OK', service: 'product-service' });
 });
-
-export default router;

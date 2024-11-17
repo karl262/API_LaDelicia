@@ -1,9 +1,13 @@
-const authModel = require('../models/authModel');
-const { generateAccessToken } = require('../middlewares/authMiddleware');
-const jwt = require('jsonwebtoken');
-const { validateJwtToken } = require('../middlewares/authMiddleware');
+// const authModel = require('../models/authModel.js');
+// const { generateAccessToken } = require('../middlewares/authMiddleware.js');
+// const jwt = require('jsonwebtoken');
+// const { validateJwtToken } = require('../middlewares/authMiddleware.js');
+import authModel from '../models/authModel.js';
+import { generateAccessToken } from '../middlewares/authMiddleware.js';
+import jwt from 'jsonwebtoken';
+import { validateJwtToken } from '../middlewares/authMiddleware.js';
 
-class authController{
+export default class authController{
 
   static async getaAuthByid (req, res) {
     const { id } = req.params;
@@ -97,4 +101,4 @@ class authController{
   }
 }
 
-module.exports = authController;
+// module.exports = authController;

@@ -128,9 +128,11 @@ services:
     networks:
       - app-network
     environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: auth_db
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=auth_db
+    ports:
+      - "5431:5432"
     volumes:
       - ./Auths/db-init:/docker-entrypoint-initdb.d
 
@@ -144,6 +146,8 @@ services:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
       POSTGRES_DB: user_db
+    ports:
+      - "5434:5432"
     volumes:
       - ./Users/db-init:/docker-entrypoint-initdb.d
 
@@ -157,6 +161,8 @@ services:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
       POSTGRES_DB: product_db
+    ports:
+      - "5435:5432"
     volumes:
       - ./Products/db-init:/docker-entrypoint-initdb.d
 
@@ -170,6 +176,8 @@ services:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
       POSTGRES_DB: employee_db
+    ports:
+      - "5436:5432"
     volumes:
       - ./Employees/db-init:/docker-entrypoint-initdb.d
 
@@ -183,6 +191,8 @@ services:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
       POSTGRES_DB: sale_db
+    ports:
+      - "5437:5432"
     volumes:
       - ./Sales/db-init:/docker-entrypoint-initdb.d
 
@@ -196,6 +206,8 @@ services:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
       POSTGRES_DB: order_db
+    ports:
+      - "5438:5432"
     volumes:
       - ./Orders/db-init:/docker-entrypoint-initdb.d
 
