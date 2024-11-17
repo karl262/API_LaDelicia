@@ -1,6 +1,6 @@
-const swaggerJsdoc = require('swagger-jsdoc');
-const swaggerUi = require('swagger-ui-express');
-require('dotenv').config();
+import swaggerJsdoc from 'swagger-jsdoc';
+import swaggerUi from 'swagger-ui-express';
+import 'dotenv/config';
 
 // Configuración de Swagger
 const options = {
@@ -28,4 +28,4 @@ const swaggerDocs = (app) => {
   console.log('Swagger docs available at http://localhost:3100/docs/auths/api-docs');
 };
 
-module.exports = swaggerDocs;
+export default swaggerDocs;

@@ -24,6 +24,6 @@ const options = {
 const swaggerSpec = swaggerJsdoc(options);
 
 export default function swaggerDocs(app) {
-  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-  console.log('Swagger docs available at http://localhost:'+ process.env.PORT+'/api-docs');
+  app.use('/docs/products/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+  console.log('Swagger docs available at http://localhost:'+ process.env.PORT+'/docs/products/api-docs');
 };
