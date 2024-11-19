@@ -1,7 +1,7 @@
-const User = require('../models/usersMoldel');
-const { body, validationResult } = require('express-validator');
+import User from '../models/usersMoldel.js';
+import {body, validationResult} from 'express-validator';
 
-class UserController {
+export default class UserController {
 
     static async getAllUsers(req, res) {
         try {
@@ -88,4 +88,3 @@ class UserController {
     }
 
 }
-module.exports = UserController;

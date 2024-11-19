@@ -1,7 +1,8 @@
-const pool = require('../config/db');
-const axios = require('axios');
 
-class User {
+import { pool } from '../config/db.js';
+import  axios  from 'axios';
+
+export default class User {
     static async findAll() {
         try {
             const result = await pool.query('SELECT * FROM users WHERE delete_at IS NULL');
@@ -66,4 +67,4 @@ class User {
         return result.rows[0];
     }
 }
-module.exports = User;
+

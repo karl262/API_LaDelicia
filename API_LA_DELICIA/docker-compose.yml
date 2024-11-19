@@ -128,9 +128,9 @@ services:
     networks:
       - app-network
     environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: auth_db
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=auth_db
     volumes:
       - ./Auths/db-init:/docker-entrypoint-initdb.d
 

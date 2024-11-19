@@ -1,10 +1,12 @@
-const express = require('express');
-const EmployeeController = require('../controllers/employeeController');
-const AuthMiddleware = require('../middlewares/auth');
+import express from 'express';
+import EmployeeController from '../controllers/employeeController.js';  
+import authMiddleware from '../middlewares/auth.js';  
 
-const router = express.Router();
 
-router.use(AuthMiddleware.authMiddleware);
+export const router = express.Router();
+
+router.use(authMiddleware);
+
 
 router.get('/get/employees', EmployeeController.getAllEmployees);
 router.get('/get/employees/by/id/:id', EmployeeController.getEmployeeById);
@@ -13,9 +15,9 @@ router.post('/create/employee', EmployeeController.createEmployee);
 router.put('/update/employee/:id', EmployeeController.updateEmployee);
 router.delete('/delete/employees/:id', EmployeeController.deleteEmployee);
 
-
 router.get('/health', (req, res) => {
     res.status(200).json({ status: 'OK', service: 'employee-service' });
 });
 
-module.exports = router;
+
+export default router;
