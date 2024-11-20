@@ -1,5 +1,3 @@
-// const {Pool} = require('pg');
-// require('dotenv').config();
 import pkg from 'pg';
 const { Pool } = pkg;
 import 'dotenv/config';
@@ -19,7 +17,4 @@ console.log('Database connection config:', {
     port: process.env.DB_PORT || 5432
 });
 
-
-// module.exports = pool;
-
-export { pool };  // Exportación nombrada
+export { pool }; 

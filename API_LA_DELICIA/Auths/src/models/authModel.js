@@ -1,5 +1,3 @@
-// const bcrypt = require('bcryptjs');
-// const pool = require('../config/db.js');
 import { pool } from '../config/db.js';
 import bcrypt from 'bcryptjs';
 export default class authModel {
@@ -65,5 +63,4 @@ export default class authModel {
 
 }
 
-// module.exports = authModel;
 
