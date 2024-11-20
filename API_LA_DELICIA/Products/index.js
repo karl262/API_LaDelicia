@@ -2,12 +2,14 @@ import express from 'express';
 import productsRoutes from './src/routes/productsRoutes.js';
 import dotenv from 'dotenv';
 import swaggerDocs from './src/config/swagger.js';
+import cors from 'cors';
 
 dotenv.config();
 
 const app = express();
 app.use(express.json());
 swaggerDocs(app);
+app.use(cors());
 
 app.use('/api/products',productsRoutes);
 
