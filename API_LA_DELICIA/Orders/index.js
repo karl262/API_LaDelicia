@@ -1,18 +1,21 @@
-const express = require('express'); 
-const cors = require('cors');
-const dotenv = require('dotenv');
-const ordersRoutes = require('./src/routes/orderRoutes'); // Ajusta esta ruta si es necesario
-
-dotenv.config();
+import express from 'express';
+import setupSwagger from './src/config/swagger.js';
+import orderRoutes from './src/routes/orderRoutes.js';
 
 const app = express();
-app.use(cors());
+const PORT = 3000;
+
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-// Usa la ruta '/api/orders' para todas las rutas de pedidos
-app.use('/api', ordersRoutes);
+// Configurar Swagger
+setupSwagger(app);
 
-const port = process.env.PORT || 3000;
-app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
+// Rutas de la API
+app.use('/api/orders', orderRoutes);
+
+app.listen(PORT, () => {
+  console.log(`Servidor escuchando en puerto ${PORT}`);
+  console.log("Documentación disponible en http://localhost:3100/docs/orders/api-docs/api-docs");
+
 });

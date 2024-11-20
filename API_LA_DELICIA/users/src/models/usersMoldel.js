@@ -1,7 +1,8 @@
-const pool = require('../config/db');
-const axios = require('axios');
 
-class User {
+import { pool } from '../config/db.js';
+import  axios  from 'axios';
+
+export default class User {
     static async findAll() {
         try {
             const result = await pool.query('SELECT * FROM users WHERE delete_at IS NULL');
@@ -11,7 +12,7 @@ class User {
             
             const userData = result.rows;
             const authUserIds = userData.map(user => user.auth_user_id);
-            const responses = await Promise.all(authUserIds.map(authUserId => axios.get(`http://auth-service:3000/api/auth/by/${authUserId}`)));
+            const responses = await Promise.all(authUserIds.map(authUserId => axios.get(`http://auth-service:3000/api/auths/get/auth/by/${authUserId}`)));
             const authData = responses.map(response => response.data);
             const combinedData = userData.map((user, index) => ({ user, auth: authData[index] }));
             return combinedData;
@@ -66,4 +67,4 @@ class User {
         return result.rows[0];
     }
 }
-module.exports = User;
+

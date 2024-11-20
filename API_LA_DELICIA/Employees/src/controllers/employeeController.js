@@ -1,6 +1,5 @@
-const Employee = require('../models/employeeModel');
-
-class EmployeeController {
+import Employee from '../models/employeeModel.js';
+export default class EmployeeController {
 
     static async getAllEmployees(req, res) {
         try {
@@ -70,5 +69,3 @@ class EmployeeController {
         }
     }
 }
-
-module.exports = EmployeeController;

@@ -1,6 +1,9 @@
 FROM node:14
 
-WORKDIR /app
+WORKDIR /src
+
+# Instalar curl
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
 
 COPY package.json package-lock.json ./
 
@@ -10,4 +13,4 @@ COPY . .
 
 EXPOSE 3000
 
-CMD ["npm", "start"]
+CMD ["npm", "run", "dev"]

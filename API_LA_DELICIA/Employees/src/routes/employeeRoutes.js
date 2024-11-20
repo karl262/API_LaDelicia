@@ -1,16 +1,23 @@
-const express = require('express');
-const EmployeeController = require('../controllers/employeeController');
-const AuthMiddleware = require('../middlewares/auth');
+import express from 'express';
+import EmployeeController from '../controllers/employeeController.js';  
+import authMiddleware from '../middlewares/auth.js';  
 
-const router = express.Router();
 
-router.use(AuthMiddleware.authMiddleware);
+export const router = express.Router();
 
-router.get('/employees', EmployeeController.getAllEmployees);
-router.get('/employees/:id', EmployeeController.getEmployeeById);
-router.get('/employees/name/:name', EmployeeController.getEmployeeByName); 
-router.post('/employees', EmployeeController.createEmployee);
-router.put('/employees/:id', EmployeeController.updateEmployee);
-router.delete('/employees/:id', EmployeeController.deleteEmployee);
+router.use(authMiddleware);
 
-module.exports = router;
+
+router.get('/get/employees', EmployeeController.getAllEmployees);
+router.get('/get/employees/by/id/:id', EmployeeController.getEmployeeById);
+router.get('/get/employees/by/name/:name', EmployeeController.getEmployeeByName); 
+router.post('/create/employee', EmployeeController.createEmployee);
+router.put('/update/employee/:id', EmployeeController.updateEmployee);
+router.delete('/delete/employees/:id', EmployeeController.deleteEmployee);
+
+router.get('/health', (req, res) => {
+    res.status(200).json({ status: 'OK', service: 'employee-service' });
+});
+
+
+export default router;
