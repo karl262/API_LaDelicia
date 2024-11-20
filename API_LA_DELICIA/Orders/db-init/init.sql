@@ -27,3 +27,4 @@ create table if not exists order_detail (
   delete_at TIMESTAMP WITHOUT TIME ZONE,
   foreign key (orderid) references orders (id)
 );
+

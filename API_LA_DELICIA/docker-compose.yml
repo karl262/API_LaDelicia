@@ -100,6 +100,25 @@ services:
     depends_on:
       - sale-db
       - auth-service
+  
+  order-service:
+    build: ./Orders
+    command: npm run dev
+    ports:
+      - "3006:3000"
+    environment:
+      - DB_HOST=order-db
+      - DB_USER=user
+      - DB_PASSWORD=password
+      - DB_NAME=order_db
+      - AUTH_SERVICE_URL=http://auth-service:3000
+      - SALE_SERVICE_URL=http://sale-service:3000
+      - EMPLOYEE_SERVICE_URL=http://employee-service:3000
+    depends_on:
+      - employee-service
+      - order-db
+      - auth-service
+      - sale-service
 
   order-service:
     build: ./Orders
