@@ -1,7 +1,3 @@
-// const authModel = require('../models/authModel.js');
-// const { generateAccessToken } = require('../middlewares/authMiddleware.js');
-// const jwt = require('jsonwebtoken');
-// const { validateJwtToken } = require('../middlewares/authMiddleware.js');
 import authModel from '../models/authModel.js';
 import { generateAccessToken } from '../middlewares/authMiddleware.js';
 import jwt from 'jsonwebtoken';
@@ -100,5 +96,3 @@ export default class authController{
       });
   }
 }
-
-// module.exports = authController;
