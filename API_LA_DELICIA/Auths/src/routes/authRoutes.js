@@ -108,10 +108,9 @@
  *         description: Acceso denegado o token inválido
  */
 
-const express = require("express");
-const authController = require("../controllers/authController");
-const { validateDataLogin } = require("../middlewares/authValidation");
-const swaggerDocs = require("../config/swagger");
+import express from 'express';
+import authController from '../controllers/authController.js';
+import { validateDataLogin } from '../middlewares/authValidation.js';
 
 const router = express.Router();
 
@@ -137,4 +136,4 @@ router.get("/health", (req, res) => {
   });
 });
 
-module.exports = router;
+export default router;

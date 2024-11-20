@@ -1,7 +1,7 @@
-import {User} from '../models/usersMoldel.js';
+import User from '../models/usersMoldel.js';
 import {body, validationResult} from 'express-validator';
 
-export class UserController {
+export default class UserController {
 
     static async getAllUsers(req, res) {
         try {
@@ -88,5 +88,3 @@ export class UserController {
     }
 
 }
-
-export default UserController;

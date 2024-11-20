@@ -1,5 +1,4 @@
 import  axios  from 'axios';
-
 const authMiddleware = async (req, res, next) => {
     const token = req.header('Authorization')?.replace('Bearer ', '');
 

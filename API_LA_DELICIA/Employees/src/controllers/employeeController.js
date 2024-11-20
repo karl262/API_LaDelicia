@@ -1,6 +1,5 @@
-import { Employee } from '../models/employeeModel.js';
-
-export class EmployeeController {
+import Employee from '../models/employeeModel.js';
+export default class EmployeeController {
 
     static async getAllEmployees(req, res) {
         try {
@@ -70,5 +69,3 @@ export class EmployeeController {
         }
     }
 }
-
-export default EmployeeController;

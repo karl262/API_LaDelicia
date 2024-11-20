@@ -304,7 +304,7 @@ import express from 'express';
 import ProductController from '../controllers/productsController.js';
 import authMiddleware from '../middlewares/auth.js';  
 
-export const router = express.Router();
+const router = express.Router();
 
 router.use(authMiddleware);
 
