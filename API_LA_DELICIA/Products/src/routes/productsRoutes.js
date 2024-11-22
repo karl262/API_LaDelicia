@@ -303,6 +303,7 @@
 import express from 'express';
 import ProductController from '../controllers/productsController.js';
 import authMiddleware from '../middlewares/auth.js';  
+import upload from '../config/multer.js';
 
 const router = express.Router();
 
@@ -314,7 +315,7 @@ router.get('/get/products/by/name/:name', ProductController.getProductsByName);
 router.get('/get/products/by/price/:price', ProductController.getProductsByPrice);
 router.get('/get/products/by/stock/:stock', ProductController.getProductsByStock);
 router.get('/get/products/by/sku/:sku', ProductController.getProductsBySku);
-router.post('/create/product', ProductController.createProduct);
+router.post('/create/product', upload.single('image'), ProductController.createProduct);
 router.put('/update/product/:id', ProductController.updateProduct);
 router.delete('/delete/product/:id', ProductController.deleteProduct);
 

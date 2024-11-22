@@ -33,13 +33,22 @@ export class Product {
     }
 
     static async create(product) {
-        const { name_product, price_product, stock, ingredients, baking_time } = product; // Cambié los nombres de las propiedades
+        if (!product) {
+            throw new Error('El objeto product es requerido');
+        }
+    
+        const { name_product, price_product, categoryid, stock, ingredients, baking_time, image } = product;
+    
+        const imageValue = image || 'default-image-url.jpg';
+    
         const result = await pool.query(
-            'INSERT INTO products (name_product, price_product, stock, ingredients, baking_time) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-            [name_product, price_product, stock, ingredients, baking_time]
+            'INSERT INTO products (name_product, price_product, categoryid, stock, ingredients, baking_time, image) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
+            [name_product, price_product, categoryid, stock, ingredients, baking_time, imageValue]
         );
+    
         return result.rows[0];
     }
+    
 
     static async update(id, product) {
         const { name_product, price_product, stock, ingredients, baking_time } = product; // Cambié los nombres de las propiedades
