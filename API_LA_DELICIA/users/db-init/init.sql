@@ -16,9 +16,10 @@ create table if not exists users (
   last_surname text not null,
   phone_number text,
   auth_user_id bigint,
-  client_id bigint,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-  delete_at TIMESTAMP WITHOUT TIME ZONE,
-  foreign key (client_id) references client (id) on delete set null
+  delete_at TIMESTAMP WITHOUT TIME ZONE
 );
+
+insert into users (name, first_surname, last_surname, auth_user_id)
+values ('admin', 'admin', 'admin', 1);

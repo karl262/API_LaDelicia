@@ -11,8 +11,7 @@ export default class User {
     date_of_birth,
     phone_number,
     postal_code,
-    id_preferred_payment_method,
-    client_id
+    id_preferred_payment_method
   }) {
     try {
       const clientResult = await pool.query(
@@ -23,8 +22,8 @@ export default class User {
       const clientId = client.id;
 
       const userResult = await pool.query(
-        "INSERT INTO users (name, first_surname, last_surname, auth_user_id, phone_number, client_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *",
-        [name, first_surname, last_surname, auth_user_id, phone_number, clientId]
+        "INSERT INTO users (name, first_surname, last_surname, auth_user_id, phone_number) VALUES ($1, $2, $3, $4, $5) RETURNING *",
+        [name, first_surname, last_surname, auth_user_id, phone_number]
       );
       const user = userResult.rows[0];
 
@@ -41,18 +40,32 @@ export default class User {
     name,
     first_surname,
     last_surname,
-    auth_user_id,
     phone_number,
-    client_id,
     email,
     password,
   }) {
+    const client = await pool.connect(); 
     try {
-      const result = await pool.query(
-        "INSERT INTO users (name, first_surname, last_surname, auth_user_id, phone_number, client_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *",
-        [name, first_surname, last_surname, auth_user_id, phone_number, client_id]
+      await client.query("BEGIN");
+  
+      // Inserta el usuario en la base de datos
+      const userResult = await client.query(
+        `INSERT INTO users (name, first_surname, last_surname, phone_number) 
+         VALUES ($1, $2, $3, $4) 
+         RETURNING id, name, first_surname, last_surname, phone_number`,
+        [name, first_surname, last_surname, phone_number]
       );
-      axios.post(
+  
+      const user = userResult.rows[0];
+  
+      await client.query(
+        `UPDATE users 
+         SET auth_user_id = $1 
+         WHERE id = $1`,
+        [user.id]
+      );
+  
+      await axios.post(
         "http://auth-service:3000/api/auths/register/auth/user",
         {
           username,
@@ -64,18 +77,23 @@ export default class User {
             "Content-Type": "application/json",
           },
         }
-      )
-      return result.rows[0];
+      );
+  
+      await client.query("COMMIT");
+      return user; 
     } catch (error) {
+      await client.query("ROLLBACK");
       console.error("Error al crear usuario:", error);
       throw new Error("Error al crear usuario en la base de datos");
+    } finally {
+      client.release(); 
     }
   }
 
   static async findAll() {
     try {
       const result = await pool.query(
-        "SELECT c.*, u.* FROM users u JOIN client c ON u.client_id = c.id WHERE c.delete_at IS NULL AND u.delete_at IS NULL "
+        "SELECT * FROM users WHERE delete_at IS NULL "
       );
       if (result.rows.length === 0) {
         return [];
