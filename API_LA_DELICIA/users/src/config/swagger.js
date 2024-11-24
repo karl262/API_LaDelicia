@@ -14,16 +14,16 @@ const options = {
     },
     servers: [
       {
-        url: 'http://localhost:'+process.env.PORT,
+        url: 'http://localhost:3100',
       },
     ],
   },
-  apis: ['./src/routes/usersRoutes.js'],
+  apis: ['./src/routes/*.js'],
 };
 
 const swaggerSpec = swaggerJsdoc(options);
 
 export default function swaggerDocs(app) {
   app.use('/docs/users/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-  console.log('Swagger docs available at http://localhost:'+ process.env.PORT+'/docs/users/api-docs');
+  console.log('Swagger docs available at http://localhost:3100/docs/users/api-docs');
 };
