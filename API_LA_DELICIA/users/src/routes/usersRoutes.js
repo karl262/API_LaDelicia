@@ -173,11 +173,12 @@ export const router = express.Router();
 
 router.use(authMiddleware);
 
-router.get('/users', UserController.getAllUsers);
-router.get('/users/:id', UserController.getUserById);
-router.get('/users/name/:user_name', UserController.getUserByUserName);
-router.post('/users', UserController.createUser);
-router.put('/users/:id', UserController.updateUser);
-router.delete('/users/:id', UserController.deleteUser);
+router.post('/create/user', UserController.createUser);
+router.get('/getAll/users', UserController.getAllUsers);
+router.get('/get/users/:id', UserController.getUserById);
+router.get('/get/users//by/user_name/:user_name', UserController.getUserByUserName);
+router.put('/update/users/:id', UserController.updateUser);
+router.delete('/delete/user/:id', UserController.deleteUser);
+router.post('/create/user/mobile', UserController.createUserMobile);
 
 export default router;

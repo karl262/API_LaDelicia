@@ -3,6 +3,32 @@ import {body, validationResult} from 'express-validator';
 
 export default class UserController {
 
+    static async createUser(req, res) {
+        try {
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                return res.status(400).json({ errors: errors.array() });
+            }
+            const user = await User.create(req.body);
+            res.json(user);
+        } catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    }
+
+    static async createUserMobile(req, res) {
+        try {
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                return res.status(400).json({ errors: errors.array() });
+            }
+            const user = await User.createUserMobile(req.body);
+            res.json(user);
+        } catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    }
+
     static async getAllUsers(req, res) {
         try {
             const users = await User.findAll();
@@ -46,21 +72,6 @@ export default class UserController {
         body('preferred_payment_method').notEmpty().withMessage('El método de pago es requerido')
         // Añade más validaciones según sea necesario
     ];
-
-    static async createUser(req, res) {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(400).json({ errors: errors.array() });
-        }
-
-        const { first_name, last_name, date_of_birth, phone_number, preferred_payment_method, auth_user_id } = req.body;
-        try {
-            const newUser = await User.create(first_name, last_name, date_of_birth, phone_number, preferred_payment_method, auth_user_id);
-            res.status(201).json(newUser);
-        } catch (error) {
-            res.status(500).json({ error: error.message });
-        }
-    }
 
     static async updateUser(req, res) {
         const { first_name, last_name, date_of_birth, phone_number, preferred_payment_method } = req.body;
