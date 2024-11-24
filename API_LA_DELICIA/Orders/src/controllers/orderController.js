@@ -129,6 +129,45 @@ class OrderController {
       });
     }
   }
+
+  static async addOrderDiscount(req, res) {
+    const { orderId } = req.params;
+    const { discountPercentage } = req.body; 
+
+    try {
+        
+        if (typeof discountPercentage !== 'number' || discountPercentage > 0 || discountPercentage < 100) {
+            return res.status(400).json({
+                success: false,
+                message: 'El porcentaje de descuento debe estar entre 0% y 100%'
+            });
+        }
+
+        // Actualizar el descuento en el modelo
+        const updatedOrder = await OrderModel.addOrderDiscount(orderId, discountPercentage);
+
+        if (!updatedOrder) {
+            return res.status(404).json({
+                success: false,
+                message: 'Orden no encontrada'
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: `Se aplicó un descuento del ${discountPercentage}% a la orden`,
+            order: updatedOrder
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: 'Error al aplicar el descuento a la orden',
+            error: error.message
+        });
+    }
+  }
+
+  
 }
 
 export default OrderController;
