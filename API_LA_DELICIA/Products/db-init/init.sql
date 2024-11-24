@@ -21,6 +21,15 @@ create table if not exists products (
   foreign key (categoryid) references category (id)
 );
 
+create table if not exists suppliers (
+  id bigint primary key generated always as identity,
+  name text unique not null,
+  contact_info text,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  delete_at TIMESTAMP WITHOUT TIME ZONE
+);
+
 create table if not exists ingredients (
   id bigint primary key generated always as identity,
   name text unique not null,
@@ -33,11 +42,3 @@ create table if not exists ingredients (
   foreign key (supplierid) references suppliers (id)
 );
 
-create table if not exists suppliers (
-  id bigint primary key generated always as identity,
-  name text unique not null,
-  contact_info text,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-  delete_at TIMESTAMP WITHOUT TIME ZONE
-);
