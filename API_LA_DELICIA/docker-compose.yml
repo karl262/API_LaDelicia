@@ -34,7 +34,7 @@ services:
       - auth-db
 
   user-service:
-    build: ./Users
+    build: ./users
     command: npm run dev
     ports:
       - "3002:3000"
@@ -145,7 +145,7 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: user_db
     volumes:
-      - ./Users/db-init:/docker-entrypoint-initdb.d
+      - ./users/db-init:/docker-entrypoint-initdb.d
 
   product-db:
     image: postgres:13

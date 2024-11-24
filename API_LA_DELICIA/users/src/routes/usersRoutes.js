@@ -280,14 +280,13 @@ import authMiddleware from '../middlewares/auth.js';
 
 export const router = express.Router();
 
-router.use(authMiddleware);
-
-router.get('/get/users', UserController.getAllUsers);
-router.get('/get/users/by/id/:id', UserController.getUserById);
-router.get('/get/users/by/name/:user_name', UserController.getUserByUserName);
 router.post('/create/user', UserController.createUser);
-router.put('/update/user/:id', UserController.updateUser);
-router.delete('/delete/user/:id', UserController.deleteUser);
+router.post('/create/user/mobile', UserController.createUserMobile);
+router.get('/getAll/users',authMiddleware, UserController.getAllUsers);
+router.get('/get/users/:id',authMiddleware, UserController.getUserById);
+router.get('/get/users//by/user_name/:user_name',authMiddleware, UserController.getUserByUserName);
+router.put('/update/users/:id',authMiddleware, UserController.updateUser);
+router.delete('/delete/user/:id',authMiddleware, UserController.deleteUser);
 
 export default router;
 

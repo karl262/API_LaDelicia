@@ -1,4 +1,11 @@
 import {Product} from '../models/productsModel.js';
+import cloudinary from 'cloudinary';
+
+cloudinary.v2.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 export class ProductController {
 
@@ -73,12 +80,50 @@ export class ProductController {
 
     static async createProduct(req, res) {
         try {
-            const newProduct = await Product.create(req.body);
-            res.status(201).json(newProduct);
+            const { name_product, price_product, categoryid, stock, ingredients, baking_time } = req.body;
+    
+            if (!name_product || !price_product || !categoryid || !stock || !ingredients || !baking_time) {
+                return res.status(400).json({ error: "Todos los campos son obligatorios" });
+            }
+    
+            if (!req.file) {
+                return res.status(400).json({ error: "No se proporcionó una imagen" });
+            }
+    
+            const uploadImage = async (imagePath) => {
+                const options = {
+                    use_filename: true,
+                    unique_filename: false,
+                    overwrite: true,
+                };
+                try {
+                    const result = await cloudinary.uploader.upload(imagePath, options);
+                    return result.url;
+                } catch (error) {
+                    console.error('Error al subir imagen:', error);
+                    throw error;
+                }
+            };
+    
+            const imageUrl = await uploadImage(req.file.path);
+    
+            const newProduct = {
+                name_product,
+                price_product,
+                categoryid,
+                stock,
+                ingredients,
+                baking_time,
+                image: imageUrl,
+            };
+    
+            const result = await Product.create(newProduct);
+            res.status(201).json(result);
         } catch (error) {
+            console.error(error);
             res.status(500).json({ error: error.message });
         }
-    }
+    }    
 
     static async updateProduct(req, res) {
         try {
