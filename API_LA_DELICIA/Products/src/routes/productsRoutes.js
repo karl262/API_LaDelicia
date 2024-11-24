@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /products:
+ * api/products:
  *   get:
  *     summary: Obtiene todos los productos
  *     description: Obtiene todos los productos
@@ -21,7 +21,7 @@
  */
 /**
  * @swagger
- * /products/{id}:
+ * api/products/{id}:
  *   get:
  *     summary: Obtiene un producto por su id
  *     description: Obtiene un producto por su id
@@ -49,7 +49,7 @@
  */
 /**
  * @swagger
- * /products/name/{name}:
+ * api/products/name/{name}:
  *   get:
  *     summary: Obtiene productos por su nombre
  *     description: Obtiene productos por su nombre
@@ -79,7 +79,7 @@
  */
 /**
  * @swagger
- * /products/price/{price}:
+ * /api/products/price/{price}:
  *   get:
  *     summary: Obtiene productos por su precio
  *     description: Obtiene productos por su precio
@@ -109,7 +109,7 @@
  */
 /**
  * @swagger
- * /products/stock/{stock}:
+ * /api/products/stock/{stock}:
  *   get:
  *     summary: Obtiene productos por su stock
  *     description: Obtiene productos por su stock
@@ -139,7 +139,7 @@
  */
 /**
  * @swagger
- * /products/sku/{sku}:
+ * /api/products/sku/{sku}:
  *   get:
  *     summary: Obtiene productos por su sku
  *     description: Obtiene productos por su sku
@@ -169,7 +169,7 @@
  */
 /**
  * @swagger
- * /products:
+ * /api/products:
  *   post:
  *     summary: Crea un producto
  *     description: Crea un producto
@@ -196,7 +196,7 @@
  */
 /**
  * @swagger
- * /products/{id}:
+ * /api/products/{id}:
  *   put:
  *     summary: Actualiza un producto por su id
  *     description: Actualiza un producto por su id
@@ -230,7 +230,7 @@
  */
 /**
  * @swagger
- * /products/{id}:
+ * /api/products/{id}:
  *   delete:
  *     summary: Elimina un producto por su id
  *     description: Elimina un producto por su id

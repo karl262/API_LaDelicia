@@ -5,7 +5,7 @@ import { validateJwtToken } from '../middlewares/authMiddleware.js';
 
 export default class authController{
 
-  static async getaAuthByid (req, res) {
+  static async getAuthByid (req, res) {
     const { id } = req.params;
     try{
       const user = await authModel.getaAuthByid(id);

@@ -53,7 +53,6 @@ export default class OrderModel {
             total: rows[0].total,
             status: rows[0].status,
             clientid: rows[0].clientid,
-            employeeid: rows[0].employeeid,
             payment_methodid: rows[0].payment_methodid,
             details: []
         };
@@ -74,18 +73,18 @@ export default class OrderModel {
     }
 
   static async createOrder(orderData) {
-    const { clientid, employeeid, payment_methodid, total, details } = orderData;
+    const { clientid, total, details } = orderData;
 
     const client = await pool.connect();
     try {
       await client.query('BEGIN');
 
       const orderQuery = `
-        INSERT INTO orders (clientid, employeeid, payment_methodid, total, status)
-        VALUES ($1, $2, $3, $4, 'pendiente')
+        INSERT INTO orders (clientid, payment_methodid, total, status)
+        VALUES ($1, 1, $2, 'pendiente')
         RETURNING id
       `;
-      const orderResult = await client.query(orderQuery, [clientid, employeeid, payment_methodid, total]);
+      const orderResult = await client.query(orderQuery, [clientid, total]);
       const orderId = orderResult.rows[0].id;
 
       const detailQuery = `

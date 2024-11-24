@@ -5,14 +5,13 @@ const options = {
   definition: {
     openapi: '3.0.1',
     info: {
-      title: 'API de Pedidos - La Delicia',
+      title: 'Microservicio_Pedidos - La Delicia',
       version: '1.0.0',
-      description: 'Documentación de la API de pedidos para el sistema de gestión de la panadería La Delicia',
+      description: 'Documentación de microservicio de Pedidos',
     },
     servers: [
       {
-        url: 'http://localhost:3000',
-        description: 'Servidor local',
+        url: 'http://localhost:3100',
       },
     ],
   },

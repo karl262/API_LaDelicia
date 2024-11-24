@@ -7,13 +7,13 @@ const options = {
   definition: {
     openapi: '3.0.0',
     info: {
-      title: 'Microservicio_Auths', // Título de la documentación
+      title: 'Microservicio_Auths - La Delicia', // Título de la documentación
       version: '1.0.0',       // Versión de la API
-      description: 'Documentación de micriservicio de Auths',
+      description: 'Documentación de microservicio de Auths',
     },
     servers: [
       {
-        url: 'http://localhost:'+process.env.PORT , // URL base del servidor de la API
+        url: 'http://localhost:3100', // URL base del servidor de la API
       },
     ],
   },
