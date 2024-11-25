@@ -10,21 +10,32 @@
  *     User:
  *       type: object
  *       required:
- *         - first_name
- *         - last_name
+ *         - name
+ *         - first_surname
+ *         - last_surname
+ *         - auth_user_id
+ *         - city
  *         - date_of_birth
  *         - phone_number
- *         - preferred_payment_method
- *         - auth_user_id
+ *         - postal_code
+ *         - id_preferred_payment_method
  *       properties:
- *         first_name:
+ *         first_surname:
  *           type: string
  *           description: El nombre del usuario
  *           example: Juan
- *         last_name:
+ *         last_surname:
  *           type: string
  *           description: El apellido del usuario
  *           example: García
+ *         auth_user_id:
+ *           type: string
+ *           description: El ID del usuario en el microservicio de autenticación
+ *           example: 1
+ *         city:
+ *           type: string
+ *           description: La ciudad de residencia del usuario
+ *           example: Madrid
  *         date_of_birth:
  *           type: string
  *           format: date
@@ -34,14 +45,14 @@
  *           type: string
  *           description: El número de teléfono del usuario
  *           example: 5551234567
- *         preferred_payment_method:
+ *         postal_code:
  *           type: string
- *           description: El método de pago preferido del usuario
- *           example: fisico
- *         auth_user_id:
+ *           description: El código postal de residencia del usuario
+ *           example: 28001
+ *         id_preferred_payment_method:
  *           type: string
- *           description: El ID del usuario en el microservicio de autenticación
- *           example: auth123
+ *           description: El ID del método de pago preferido del usuario
+ *           example: 1
  *     Error:
  *       type: object
  *       properties:
@@ -49,11 +60,61 @@
  *           type: string
  *           description: Mensaje de error
  *           example: Error al realizar la petición
+ * 
+ *     UserMobile:
+ *       type: object
+ *       required:
+ *         - username
+ *         - name
+ *         - first_surname
+ *         - last_surname
+ *         - phone_number
+ *         - email
+ *         - password
+ *       properties:
+ *         username:
+ *           type: string
+ *           description: El nombre de usuario
+ *           example: JuanGarcia
+ *         name:
+ *           type: string
+ *           description: El nombre del usuario
+ *           example: Juan
+ *         first_surname:
+ *           type: string
+ *           description: El apellido del usuario
+ *           example: García
+ *         last_surname:
+ *           type: string
+ *           description: El apellido del usuario
+ *           example: García
+ *         phone_number:
+ *           type: string
+ *           description: El número de teléfono del usuario
+ *           example: 5551234567
+ *         email:
+ *           type: string
+ *           description: El correo electrónico del usuario
+ *           example: 5o9t6@example.com
+ *         password:
+ *           type: string
+ *           description: La contraseña del usuario
+ *           example: password
+ * 
+ *     ErrorMobile:
+ *       type: object
+ *       properties:
+ *         error:
+ *           type: string
+ *           description: Mensaje de error
+ *           example: Error al realizar la petición
+ * 
  *
  */
+
 /**
  * @swagger
- * /api/users/get/users:
+ * /api/users/getAll/users:
  *   get:
  *     summary: Obtiene todos los usuarios
  *     description: Recupera una lista completa de usuarios almacenados en el sistema.
@@ -84,7 +145,7 @@
  */
 /**
  * @swagger
- * /api/users/get/users/by/id/{id}:
+ * /api/users/get/users/{id}:
  *   get:
  *     summary: Obtiene un usuario por su ID
  *     description: Recupera la información de un usuario específico mediante su ID único.
@@ -120,7 +181,7 @@
  */
 /**
  * @swagger
- * /api/users/get/users/by/name/{user_name}:
+ * /api/users/get/users/by/user_name/{user_name}:
  *   get:
  *     summary: Obtiene un usuario por su nombre
  *     description: Recupera la información de un usuario utilizando su nombre único.
@@ -195,7 +256,46 @@
  */
 /**
  * @swagger
- * /api/users/update/user/{id}:
+ * /api/users/create/user/mobile:
+ *   post:
+ *     summary: Crea un usuario móvil
+ *     description: Registra un nuevo usuario móvil en el sistema.
+ *     tags:
+ *       - Users
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/UserMobile'
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       201:
+ *         description: Usuario móvil creado exitosamente.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/UserMobile'
+ *       400:
+ *         description: Datos inválidos enviados en la solicitud.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorMobile'
+ *       401:
+ *         description: No se proporcionó un token de autenticación.
+ *       500:
+ *         description: Error interno del servidor.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorMobile'
+ *
+ */
+/**
+ * @swagger
+ * /api/users/update/users/{id}:
  *   put:
  *     summary: Actualiza un usuario por su ID
  *     description: Modifica la información de un usuario existente utilizando su ID único.
@@ -273,7 +373,6 @@
  *               $ref: '#/components/schemas/Error'
  *
  */
-
 import express from 'express';
 import UserController from '../controllers/usersController.js';
 import authMiddleware from '../middlewares/auth.js';
