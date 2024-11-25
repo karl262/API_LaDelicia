@@ -42,3 +42,5 @@ create table if not exists ingredients (
   foreign key (supplierid) references suppliers (id)
 );
 
+INSERT INTO category (name_category) VALUES ('Panaderia');
+INSERT INTO category (name_category) VALUES ('Reposteria');
