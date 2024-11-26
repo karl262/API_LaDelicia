@@ -7,7 +7,18 @@ const options = {
       info: {
         title: 'Microservicio_Empleados - La Delicia',
         version: '1.0.0',
-        description: 'Documentación de microservicio de Empleados',
+        description: `
+        Este microservicio gestiona la información de empleados de la plataforma **La Delicia**.
+        Proporciona endpoints para crear, leer, actualizar y eliminar información de empleados.
+
+        ### Funcionalidades principales:
+        - **Obtener todos los empleados**
+        - **Obtener empleado por ID**
+        - **Obtener empleado por nombre**
+        - **Crear un nuevo empleado**
+        - **Actualizar un empleado existente**
+        - **Eliminar un empleado**
+      `,
       },
       servers: [
         {
