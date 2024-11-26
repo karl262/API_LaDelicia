@@ -20,13 +20,17 @@
  *         - postal_code
  *         - id_preferred_payment_method
  *       properties:
- *         first_surname:
+ *         name:
  *           type: string
  *           description: El nombre del usuario
  *           example: Juan
+ *         first_surname:
+ *           type: string
+ *           description: El primer apellido del usuario
+ *           example: Garcia
  *         last_surname:
  *           type: string
- *           description: El apellido del usuario
+ *           description: El segundo apellido del usuario
  *           example: García
  *         auth_user_id:
  *           type: string
@@ -49,10 +53,6 @@
  *           type: string
  *           description: El código postal de residencia del usuario
  *           example: 28001
- *         id_preferred_payment_method:
- *           type: string
- *           description: El ID del método de pago preferido del usuario
- *           example: 1
  *     Error:
  *       type: object
  *       properties:
@@ -189,7 +189,7 @@
  *       - Users
  *     parameters:
  *       - in: path
- *         name: user_name
+ *         name: name
  *         schema:
  *           type: string
  *         required: true
@@ -373,6 +373,7 @@
  *               $ref: '#/components/schemas/Error'
  *
  */
+
 import express from 'express';
 import UserController from '../controllers/usersController.js';
 import authMiddleware from '../middlewares/auth.js';
@@ -383,7 +384,7 @@ router.post('/create/user', UserController.createUser);
 router.post('/create/user/mobile', UserController.createUserMobile);
 router.get('/getAll/users',authMiddleware, UserController.getAllUsers);
 router.get('/get/users/:id',authMiddleware, UserController.getUserById);
-router.get('/get/users//by/user_name/:user_name',authMiddleware, UserController.getUserByUserName);
+router.get('/get/users/by/user_name/:user_name',authMiddleware, UserController.getUserByUserName);
 router.put('/update/users/:id',authMiddleware, UserController.updateUser);
 router.delete('/delete/user/:id',authMiddleware, UserController.deleteUser);
 
