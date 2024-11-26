@@ -9,7 +9,16 @@ const options = {
     info: {
       title: 'Microservicio_Auths - La Delicia', // Título de la documentación
       version: '1.0.0',       // Versión de la API
-      description: 'Documentación de microservicio de Auths',
+      description: `
+      Este microservicio maneja la autenticación y autorización de usuarios dentro de la plataforma **La Delicia**. 
+      Proporciona endpoints seguros para registrar usuarios, iniciar sesión y verificar tokens de autenticación.
+
+      ### Funcionalidades principales:
+      - **Obtener autenticación por ID**
+      - **Registro de usuarios**
+      - **Inicio de sesión**
+      - **Verificación de token**
+    `,
     },
     servers: [
       {

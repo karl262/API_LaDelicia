@@ -11,7 +11,14 @@ definition: {
     info: {
       title: 'Microservicio_Ventas - La Delicia', // Título de la documentación
       version: '1.0.0',       // Versión de la API
-    description: 'Documentación de microservicio de Ventas',
+      description: `
+      Este microservicio gestiona las ventas en la plataforma **La Delicia**. Permite obtener información sobre las ventas realizadas, consultar los detalles de una venta específica y eliminar ventas.
+
+      ### Funcionalidades principales:
+      - **Obtener todas las ventas**
+      - **Obtener detalles de una venta por ID**
+      - **Eliminar una venta**
+    `,
     },
     servers: [
     {
