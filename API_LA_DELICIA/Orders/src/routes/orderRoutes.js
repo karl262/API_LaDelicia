@@ -4,12 +4,19 @@
  *   name: Pedidos
  *   description: API para manejar pedidos
  *
+ * components:
+ *   securitySchemes:
+ *     BearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
+ * 
  * /api/orders/convert-to-sale/{orderId}:
  *   post:
  *     summary: Convertir un pedido en venta
  *     description: Convierte un pedido existente en una venta y actualiza su estado.
  *     security:
- *       - bearerAuth: []
+ *       - BearerAuth: []  # Protegido por autenticación
  *     parameters:
  *       - in: path
  *         name: orderId
@@ -30,7 +37,7 @@
  *     summary: Crear un pedido
  *     description: Crea un nuevo pedido.
  *     security:
- *       - bearerAuth: []
+ *       - BearerAuth: []  # Protegido por autenticación
  *     requestBody:
  *       required: true
  *       content:
@@ -41,12 +48,6 @@
  *               clientid:
  *                 type: integer
  *                 description: ID del cliente
- *               employeeid:
- *                 type: integer
- *                 description: ID del empleado
- *               payment_methodid:
- *                 type: integer
- *                 description: ID del m todo de pago
  *               total:
  *                 type: number
  *                 description: Total del pedido
@@ -77,7 +78,7 @@
  *     summary: Obtener un pedido por ID
  *     description: Obtiene un pedido por su ID.
  *     security:
- *       - bearerAuth: []
+ *       - BearerAuth: []  # Protegido por autenticación
  *     parameters:
  *       - in: path
  *         name: id
@@ -98,7 +99,7 @@
  *     summary: Actualizar estado de un pedido
  *     description: Actualiza el estado de un pedido existente.
  *     security:
- *       - bearerAuth: []
+ *       - BearerAuth: []  # Protegido por autenticación
  *     parameters:
  *       - in: path
  *         name: orderId
@@ -127,6 +128,7 @@
  *         description: No autorizado
  */
 
+
 import express from 'express';
 import authMiddleware from '../middlewares/auth.js';
 import OrderController from '../controllers/orderController.js';
@@ -138,6 +140,7 @@ router.post('/create/order', authMiddleware, OrderController.createOrder);
 router.get('/get/orders/by/id/:id', authMiddleware, OrderController.getOrderById);
 router.patch('/updateStatus/:orderId',authMiddleware, OrderController.updateOrderStatus);
 router.post('/convert-to-sale/:orderId', authMiddleware, OrderController.convertOrderToSale);
+router.patch('/add/discount/:orderId', authMiddleware, OrderController.addOrderDiscount);
 
 export default router;
 

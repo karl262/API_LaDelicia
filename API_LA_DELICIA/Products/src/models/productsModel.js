@@ -12,13 +12,13 @@ export class Product {
         return result.rows[0];
     }
 
-    static async findByName(name) {
-        const result = await pool.query('SELECT * FROM products WHERE name ILIKE $1 AND delete_at IS NULL', [`%${name}%`]);
+    static async findByName(name_product) {
+        const result = await pool.query('SELECT * FROM products WHERE name_product ILIKE $1 AND delete_at IS NULL', [`%${name_product}%`]);
         return result.rows;
     }
 
-    static async findByPrice(price) {
-        const result = await pool.query('SELECT * FROM products WHERE price_product = $1 AND delete_at IS NULL', [price]);
+    static async findByPrice(price_product) {
+        const result = await pool.query('SELECT * FROM products WHERE price_product = $1 AND delete_at IS NULL', [price_product]);
         return result.rows;
     }
 
@@ -40,10 +40,13 @@ export class Product {
         const { name_product, price_product, categoryid, stock, ingredients, baking_time, image } = product;
     
         const imageValue = image || 'default-image-url.jpg';
+
+        // Convertir baking_time a un intervalo de minutos
+        const bakingTimeInterval = `${baking_time} minutes`;
     
         const result = await pool.query(
             'INSERT INTO products (name_product, price_product, categoryid, stock, ingredients, baking_time, image) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
-            [name_product, price_product, categoryid, stock, ingredients, baking_time, imageValue]
+            [name_product, price_product, categoryid, stock, ingredients, bakingTimeInterval, imageValue]
         );
     
         return result.rows[0];
@@ -51,11 +54,22 @@ export class Product {
     
 
     static async update(id, product) {
-        const { name_product, price_product, stock, ingredients, baking_time } = product; // Cambié los nombres de las propiedades
+        if (!product) {
+           throw new Error('El objeto product es requerido');
+        }
+        const { name_product, price_product, categoryid, stock, ingredients, baking_time, image } = product;
+        const imageValue = image || 'default-image-url.jpg';
+        
+        // Convertir baking_time a un intervalo de minutos
+        const bakingTimeInterval = `${baking_time} minutes`;
+       
         const result = await pool.query(
-            'UPDATE products SET name_product = $1, price_product = $2, stock = $3, ingredients = $4, baking_time = $5, updated_at = CURRENT_TIMESTAMP WHERE id = $6 RETURNING *',
-            [name_product, price_product, stock, ingredients, baking_time, id]
+           'UPDATE products SET name_product = $1, price_product = $2, categoryid = $3, stock = $4, ingredients = $5, baking_time = $6, image = $7, updated_at = CURRENT_TIMESTAMP WHERE id = $8 RETURNING *',
+           [name_product, price_product, categoryid, stock, ingredients, bakingTimeInterval, imageValue, id]
         );
+        if (result.rowCount === 0) {
+           throw new Error(`No se encontró el producto con id ${id}`);
+        }
         return result.rows[0];
     }
 

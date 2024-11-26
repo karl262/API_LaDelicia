@@ -14,7 +14,6 @@ create table if not exists sales (
   discount numeric default 0,
   final_total numeric generated always as (total - discount) stored,  -- Calculated as total - discount
   clientid bigint not null,
-  employeeid bigint not null,
   payment_methodid bigint not null,
   sale_date TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,

@@ -9,13 +9,20 @@ const options = {
 definition: {
     openapi: '3.0.0',
     info: {
-      title: 'API de Ventas', // Título de la documentación
+      title: 'Microservicio_Ventas - La Delicia', // Título de la documentación
       version: '1.0.0',       // Versión de la API
-    description: 'Documentación de API de Ventas',
+      description: `
+      Este microservicio gestiona las ventas en la plataforma **La Delicia**. Permite obtener información sobre las ventas realizadas, consultar los detalles de una venta específica y eliminar ventas.
+
+      ### Funcionalidades principales:
+      - **Obtener todas las ventas**
+      - **Obtener detalles de una venta por ID**
+      - **Eliminar una venta**
+    `,
     },
     servers: [
     {
-        url: 'http://localhost:'+process.env.PORT , // URL base del servidor de la API
+        url: 'http://localhost:3100', // URL base del servidor de la API
     },
     ],
 },

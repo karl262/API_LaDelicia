@@ -1,21 +1,25 @@
 import express from 'express';
-import employeesRoutes from './src/routes/employeeRoutes.js';
+import employeesRoutes from './src/routes/employeeRoutes.js'; // Nombre consistente
+import setupSwagger from './src/config/swagger.js';
 import dotenv from 'dotenv';
 import cors from 'cors';
 
 dotenv.config();
 
-
 const app = express();
-app.use(express.json());
+const PORT = 3000;
 
+// Configurar middlewares
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
+setupSwagger(app);
+
+// Rutas de la API
 app.use('/api/employees', employeesRoutes);
 
-const port = process.env.PORT || 3000;
-app.listen(port,'0.0.0.0', () => {
-    console.log(`Server is running on port ${port}`);
-}); 
-
-export default app;
+app.listen(PORT, () => {
+    console.log(`Servidor escuchando en puerto ${PORT}`);
+    console.log("Documentación disponible en http://localhost:3100/docs/employees/api-docs");
+});

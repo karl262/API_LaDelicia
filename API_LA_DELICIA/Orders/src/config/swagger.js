@@ -5,14 +5,22 @@ const options = {
   definition: {
     openapi: '3.0.1',
     info: {
-      title: 'API de Pedidos - La Delicia',
+      title: 'Microservicio_Pedidos - La Delicia',
       version: '1.0.0',
-      description: 'Documentación de la API de pedidos para el sistema de gestión de la panadería La Delicia',
+      description: `
+        Este microservicio gestiona las ventas y pedidos de la plataforma **La Delicia**.
+        Ofrece endpoints para convertir pedidos en ventas, crear nuevos pedidos, obtener información sobre pedidos específicos y actualizar el estado de los pedidos.
+
+        ### Funcionalidades principales:
+        - **Convertir un pedido en una venta**
+        - **Crear un nuevo pedido**
+        - **Obtener pedido por ID**
+        - **Actualizar el estado de un pedido**
+      `,
     },
     servers: [
       {
-        url: 'http://localhost:3000',
-        description: 'Servidor local',
+        url: 'http://localhost:3100',
       },
     ],
   },
