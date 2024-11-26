@@ -1,274 +1,18 @@
 /**
  * @swagger
- * api/products:
- *   get:
- *     summary: Obtiene todos los productos
- *     description: Obtiene todos los productos
- *     tags:
- *       - Products
- *     responses:
- *       200:
- *         description: Productos obtenidos con exito
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Product'
- *       500:
- *         description: Error interno del servidor
- *
- */
-/**
- * @swagger
- * api/products/{id}:
- *   get:
- *     summary: Obtiene un producto por su id
- *     description: Obtiene un producto por su id
- *     tags:
- *       - Products
- *     parameters:
- *       - in: path
- *         name: id
- *         schema:
- *           type: string
- *         required: true
- *         description: ID del producto
- *     responses:
- *       200:
- *         description: Producto obtenido con exito
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Product'
- *       404:
- *         description: Producto no encontrado
- *       500:
- *         description: Error interno del servidor
- *
- */
-/**
- * @swagger
- * api/products/name/{name}:
- *   get:
- *     summary: Obtiene productos por su nombre
- *     description: Obtiene productos por su nombre
- *     tags:
- *       - Products
- *     parameters:
- *       - in: path
- *         name: name
- *         schema:
- *           type: string
- *         required: true
- *         description: Nombre del producto
- *     responses:
- *       200:
- *         description: Productos obtenidos con exito
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Product'
- *       404:
- *         description: Productos no encontrados
- *       500:
- *         description: Error interno del servidor
- *
- */
-/**
- * @swagger
- * /api/products/price/{price}:
- *   get:
- *     summary: Obtiene productos por su precio
- *     description: Obtiene productos por su precio
- *     tags:
- *       - Products
- *     parameters:
- *       - in: path
- *         name: price
- *         schema:
- *           type: number
- *         required: true
- *         description: Precio del producto
- *     responses:
- *       200:
- *         description: Productos obtenidos con exito
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Product'
- *       404:
- *         description: Productos no encontrados
- *       500:
- *         description: Error interno del servidor
- *
- */
-/**
- * @swagger
- * /api/products/stock/{stock}:
- *   get:
- *     summary: Obtiene productos por su stock
- *     description: Obtiene productos por su stock
- *     tags:
- *       - Products
- *     parameters:
- *       - in: path
- *         name: stock
- *         schema:
- *           type: number
- *         required: true
- *         description: Stock del producto
- *     responses:
- *       200:
- *         description: Productos obtenidos con exito
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Product'
- *       404:
- *         description: Productos no encontrados
- *       500:
- *         description: Error interno del servidor
- *
- */
-/**
- * @swagger
- * /api/products/sku/{sku}:
- *   get:
- *     summary: Obtiene productos por su sku
- *     description: Obtiene productos por su sku
- *     tags:
- *       - Products
- *     parameters:
- *       - in: path
- *         name: sku
- *         schema:
- *           type: string
- *         required: true
- *         description: SKU del producto
- *     responses:
- *       200:
- *         description: Productos obtenidos con exito
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Product'
- *       404:
- *         description: Productos no encontrados
- *       500:
- *         description: Error interno del servidor
- *
- */
-/**
- * @swagger
- * /api/products:
- *   post:
- *     summary: Crea un producto
- *     description: Crea un producto
- *     tags:
- *       - Products
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/Product'
- *     responses:
- *       201:
- *         description: Producto creado con exito
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Product'
- *       400:
- *         description: Error en la solicitud
- *       500:
- *         description: Error interno del servidor
- *
- */
-/**
- * @swagger
- * /api/products/{id}:
- *   put:
- *     summary: Actualiza un producto por su id
- *     description: Actualiza un producto por su id
- *     tags:
- *       - Products
- *     parameters:
- *       - in: path
- *         name: id
- *         schema:
- *           type: string
- *         required: true
- *         description: ID del producto
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/Product'
- *     responses:
- *       200:
- *         description: Producto actualizado con exito
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Product'
- *       404:
- *         description: Producto no encontrado
- *       500:
- *         description: Error interno del servidor
- *
- */
-/**
- * @swagger
- * /api/products/{id}:
- *   delete:
- *     summary: Elimina un producto por su id
- *     description: Elimina un producto por su id
- *     tags:
- *       - Products
- *     parameters:
- *       - in: path
- *         name: id
- *         schema:
- *           type: string
- *         required: true
- *         description: ID del producto
- *     responses:
- *       200:
- *         description: Producto eliminado con exito
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: Producto eliminado con exito
- *       404:
- *         description: Producto no encontrado
- *       500:
- *         description: Error interno del servidor
- *
- */
-/**
- * @swagger
  * components:
+ *   securitySchemes:
+ *     BearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
  *   schemas:
  *     Product:
  *       type: object
  *       required:
  *         - name_product
  *         - price_product
+ *         - categoryid
  *         - stock
  *         - ingredients
  *         - baking_time
@@ -282,6 +26,9 @@
  *         price_product:
  *           type: number
  *           description: Precio del producto
+ *         categoryid:
+ *           type: string
+ *           description: ID de la categoría del producto
  *         stock:
  *           type: number
  *           description: Stock del producto
@@ -291,13 +38,325 @@
  *         baking_time:
  *           type: string
  *           description: Tiempo de horneado del producto
+ *         image:
+ *           type: string
+ *           format: binary
+ *           description: Archivo de imagen del producto
  *       example:
- *         id: 1
- *         name_product: Pan Integral
+ *         id: "1"
+ *         name_product: "Pan Integral"
  *         price_product: 25.99
+ *         categoryid: "1"
  *         stock: 50
- *         ingredients: Harina integral, Agua, Sal
- *         baking_time: 40 minutos
+ *         ingredients: "Harina integral, Agua, Sal"
+ *         baking_time: "40 minutos"
+ *         image: "file-to-upload.jpg"
+ * 
+ * tags:
+ *   - name: Products
+ *     description: Endpoints para la gestión de productos
+ */
+
+/**
+ * @swagger
+ * /api/products/get/products:
+ *   get:
+ *     summary: Obtiene todos los productos
+ *     description: Recupera todos los productos que no están eliminados
+ *     tags:
+ *       - Products
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Lista de productos obtenida con éxito
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Product'
+ *       401:
+ *         description: No autorizado
+ *       500:
+ *         description: Error interno del servidor
+ */
+
+/**
+ * @swagger
+ * /api/products/get/products/by/id/{id}:
+ *   get:
+ *     summary: Obtiene un producto por su ID
+ *     description: Recupera un producto específico basado en su ID
+ *     tags:
+ *       - Products
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID del producto
+ *     responses:
+ *       200:
+ *         description: Producto obtenido con éxito
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Product'
+ *       404:
+ *         description: Producto no encontrado
+ *       401:
+ *         description: No autorizado
+ *       500:
+ *         description: Error interno del servidor
+ */
+
+/**
+ * @swagger
+ * /api/products/create/product:
+ *   post:
+ *     summary: Crea un nuevo producto
+ *     description: Añade un nuevo producto a la base de datos
+ *     tags:
+ *       - Products
+ *     security:
+ *       - BearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name_product:
+ *                 type: string
+ *                 description: Nombre del producto
+ *               price_product:
+ *                 type: number
+ *                 description: Precio del producto
+ *               categoryid:
+ *                 type: string
+ *                 description: ID de la categoría
+ *               stock:
+ *                 type: number
+ *                 description: Stock del producto
+ *               ingredients:
+ *                 type: string
+ *                 description: Ingredientes del producto
+ *               baking_time:
+ *                 type: string
+ *                 description: Tiempo de horneado
+ *               image:
+ *                 type: string
+ *                 format: binary
+ *                 description: Imagen del producto (archivo)
+ *     responses:
+ *       201:
+ *         description: Producto creado con éxito
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Product'
+ *       400:
+ *         description: Solicitud inválida
+ *       401:
+ *         description: No autorizado
+ *       500:
+ *         description: Error interno del servidor
+ */
+
+/**
+ * @swagger
+ * /api/products/update/product/{id}:
+ *   put:
+ *     summary: Actualiza un producto
+ *     description: Modifica los detalles de un producto existente
+ *     tags:
+ *       - Products
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID del producto
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name_product:
+ *                 type: string
+ *                 description: Nombre del producto
+ *               price_product:
+ *                 type: number
+ *                 description: Precio del producto
+ *               categoryid:
+ *                 type: string
+ *                 description: ID de la categoría
+ *               stock:
+ *                 type: number
+ *                 description: Stock del producto
+ *               ingredients:
+ *                 type: string
+ *                 description: Ingredientes del producto
+ *               baking_time:
+ *                 type: string
+ *                 description: Tiempo de horneado
+ *               image:
+ *                 type: string
+ *                 format: binary
+ *                 description: Imagen del producto (archivo)
+ *     responses:
+ *       201:
+ *         description: Producto creado con éxito
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Product'
+ *       400:
+ *         description: Solicitud inválida
+ *       401:
+ *         description: No autorizado
+ *       500:
+ *         description: Error interno del servidor
+ */
+
+/**
+ * @swagger
+ * /api/products/delete/product/{id}:
+ *   delete:
+ *     summary: Elimina un producto
+ *     description: Marca un producto como eliminado
+ *     tags:
+ *       - Products
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID del producto
+ *     responses:
+ *       200:
+ *         description: Producto eliminado con éxito
+ *       404:
+ *         description: Producto no encontrado
+ *       401:
+ *         description: No autorizado
+ *       500:
+ *         description: Error interno del servidor
+ */
+
+/**
+ * @swagger
+ * /api/products/get/products/by/name_product/{name_product}:
+ *   get:
+ *     summary: Obtiene productos por nombre
+ *     description: Recupera productos basados en su nombre
+ *     tags:
+ *       - Products
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: name_product
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Nombre del producto
+ *     responses:
+ *       200:
+ *         description: Productos obtenidos con éxito
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Product'
+ *       404:
+ *         description: Producto no encontrado
+ *       401:
+ *         description: No autorizado
+ *       500:
+ *         description: Error interno del servidor
+ */
+
+/**
+ * @swagger
+ * /api/products/get/products/by/price_product/{price_product}:
+ *   get:
+ *     summary: Obtiene productos por precio
+ *     description: Recupera productos basados en su precio
+ *     tags:
+ *       - Products
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: price_product  
+ *         required: true
+ *         schema:
+ *           type: number
+ *         description: Precio del producto
+ *     responses:
+ *       200:
+ *         description: Productos obtenidos con éxito
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Product'
+ *       404:
+ *         description: Producto no encontrado
+ *       401:
+ *         description: No autorizado
+ *       500:
+ *         description: Error interno del servidor
+ */
+
+/**
+ * @swagger
+ * /api/products/get/products/by/stock/{stock}:
+ *   get:
+ *     summary: Obtiene productos por stock
+ *     description: Recupera productos basados en la cantidad de stock
+ *     tags:
+ *       - Products
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: stock
+ *         required: true
+ *         schema:
+ *           type: number
+ *         description: Stock del producto
+ *     responses:
+ *       200:
+ *         description: Productos obtenidos con éxito
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Product'
+ *       404:
+ *         description: Producto no encontrado
+ *       401:
+ *         description: No autorizado
+ *       500:
+ *         description: Error interno del servidor
  */
 
 import express from 'express';
@@ -311,12 +370,11 @@ router.use(authMiddleware);
 
 router.get('/get/products', ProductController.getAllProducts);
 router.get('/get/products/by/id/:id', ProductController.getProductById);
-router.get('/get/products/by/name/:name', ProductController.getProductsByName);
-router.get('/get/products/by/price/:price', ProductController.getProductsByPrice);
+router.get('/get/products/by/name_product/:name_product', ProductController.getProductsByName);
+router.get('/get/products/by/price_product/:price_product', ProductController.getProductsByPrice);
 router.get('/get/products/by/stock/:stock', ProductController.getProductsByStock);
-router.get('/get/products/by/sku/:sku', ProductController.getProductsBySku);
 router.post('/create/product', upload.single('image'), ProductController.createProduct);
-router.put('/update/product/:id', ProductController.updateProduct);
+router.put('/update/product/:id', upload.single('image'), ProductController.updateProduct);
 router.delete('/delete/product/:id', ProductController.deleteProduct);
 
 router.get('/health', (req, res) => {
