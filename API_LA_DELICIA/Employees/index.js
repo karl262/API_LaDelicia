@@ -1,21 +1,19 @@
 import express from 'express';
-import employeesRoutes from './src/routes/employeeRoutes.js';
-import dotenv from 'dotenv';
-import cors from 'cors';
-
-dotenv.config();
-
+import swaggerUi from 'swagger-ui-express';
+import swaggerSpec from './src/config/swagger.js';
+import employeeRoutes from './src/routes/employeeRoutes.js';
 
 const app = express();
+
 app.use(express.json());
 
-app.use(cors());
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-app.use('/api/employees', employeesRoutes);
+// Rutas de empleados
+app.use('/', employeeRoutes);
 
-const port = process.env.PORT || 3000;
-app.listen(port,'0.0.0.0', () => {
-    console.log(`Server is running on port ${port}`);
-}); 
-
-export default app;
+const PORT = 3000;
+app.listen(PORT, () => {
+    console.log(`Servidor corriendo en http://localhost:${PORT}`);
+    console.log(`Documentación disponible en http://localhost:${PORT}/api-docs`);
+});
