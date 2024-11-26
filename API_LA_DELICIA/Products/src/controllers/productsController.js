@@ -32,7 +32,7 @@ export class ProductController {
 
     static async getProductsByName(req, res) {
         try {
-            const products = await Product.findByName(req.params.name);
+            const products = await Product.findByName(req.params.name_product);
             if (products.length === 0) {
                 return res.status(404).json({ message: "Producto no encontrado con este nombre" });
             }
@@ -44,7 +44,7 @@ export class ProductController {
 
     static async getProductsByPrice(req, res) {
         try {
-            const products = await Product.findByPrice(req.params.price);
+            const products = await Product.findByPrice(req.params.price_product);
             if (products.length === 0) {
                 return res.status(404).json({ message: "Producto no encontrado con este precio" });
             }
@@ -127,13 +127,54 @@ export class ProductController {
 
     static async updateProduct(req, res) {
         try {
-            const updatedProduct = await Product.update(req.params.id, req.body);
-            if (!updatedProduct) {
-                return res.status(404).json({ message: "Producto no encontrado" });
-            }
-            res.json(updatedProduct);
+           const { name_product, price_product, categoryid, stock, ingredients, baking_time } = req.body;
+           
+           // Validar y convertir baking_time
+           const bakingTimeInterval = `${baking_time} minutes`;
+       
+           if (!name_product || !price_product || !categoryid || !stock || !ingredients || !baking_time) {
+               return res.status(400).json({ error: "Todos los campos son obligatorios" });
+           }
+           
+           if (!req.file) {
+               return res.status(400).json({ error: "No se proporcionó una imagen" });
+           }
+           
+           const uploadImage = async (imagePath) => {
+               const options = {
+                   use_filename: true,
+                   unique_filename: false,
+                   overwrite: true,
+               };
+               try {
+                   const result = await cloudinary.uploader.upload(imagePath, options);
+                   return result.url;
+               } catch (error) {
+                   console.error('Error al subir imagen:', error);
+                   throw error;
+               }
+           };
+           
+           const imageUrl = await uploadImage(req.file.path);
+           
+           const updatedProductData = {
+               name_product,
+               price_product,
+               categoryid,
+               stock,
+               ingredients,
+               baking_time: bakingTimeInterval, // Enviar como intervalo
+               image: imageUrl,
+           };
+           
+           const updatedProduct = await Product.update(req.params.id, updatedProductData);
+           return res.json(updatedProduct);
         } catch (error) {
-            res.status(500).json({ error: error.message });
+           if (error.message.includes("No se encontró el producto")) {
+               return res.status(404).json({ message: "Producto no encontrado" });
+           }
+           console.error(error);
+           return res.status(500).json({ error: error.message });
         }
     }
 
