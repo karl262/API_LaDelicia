@@ -7,7 +7,16 @@ const options = {
     info: {
       title: 'Microservicio_Pedidos - La Delicia',
       version: '1.0.0',
-      description: 'Documentación de microservicio de Pedidos',
+      description: `
+        Este microservicio gestiona las ventas y pedidos de la plataforma **La Delicia**.
+        Ofrece endpoints para convertir pedidos en ventas, crear nuevos pedidos, obtener información sobre pedidos específicos y actualizar el estado de los pedidos.
+
+        ### Funcionalidades principales:
+        - **Convertir un pedido en una venta**
+        - **Crear un nuevo pedido**
+        - **Obtener pedido por ID**
+        - **Actualizar el estado de un pedido**
+      `,
     },
     servers: [
       {
