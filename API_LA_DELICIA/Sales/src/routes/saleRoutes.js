@@ -133,17 +133,18 @@
  *         description: Internal server error
  */
 
-import express from 'express';
-import SaleController from '../controllers/saleController.js';
-import authMiddleware from '../middlewares/auth.js'
+import express from "express";
+import SaleController from "../controllers/saleController.js";
+import authMiddleware from "../middlewares/auth.js";
 
 const router = express.Router();
 
 router.use(authMiddleware);
 
-router.get('/get/sales', SaleController.getSales);
-router.get('/get/sales/by/id/:id', SaleController.getSaleById);
-router.delete('/delete/sale/:id', SaleController.deleteSale);
-router.post('/create-from-order', SaleController.createSaleFromOrder);
+router.get("/get/sales", SaleController.getSales);
+router.get("/get/sales/by/id/:id", SaleController.getSaleById);
+router.delete("/delete/sale/:id", SaleController.deleteSale);
+router.post("/create-from-order", SaleController.createSaleFromOrder);
+router.get("/get/sales/by/client/:clientId", SaleController.getSalesByClientId);
 
 export default router;
