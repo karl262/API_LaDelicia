@@ -1,0 +1,3 @@
+"este archivo solo es una nota"
+se subio este archivo para que se carge en el proyecto principal la carpeta uploads
+en esta carpeta solo es para el paso de datos de las imagenes manera temporal

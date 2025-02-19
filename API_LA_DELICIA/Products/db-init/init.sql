@@ -14,20 +14,11 @@ create table if not exists products (
   stock int null,
   ingredients text,
   baking_time interval,
+  image text,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   delete_at TIMESTAMP WITHOUT TIME ZONE,
   foreign key (categoryid) references category (id)
-);
-
-create table if not exists ingredients (
-  id bigint primary key generated always as identity,
-  name text unique not null,
-  quantity numeric not null,
-  unit text not null,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-  delete_at TIMESTAMP WITHOUT TIME ZONE
 );
 
 create table if not exists suppliers (
@@ -38,3 +29,18 @@ create table if not exists suppliers (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   delete_at TIMESTAMP WITHOUT TIME ZONE
 );
+
+create table if not exists ingredients (
+  id bigint primary key generated always as identity,
+  name text unique not null,
+  quantity numeric not null,
+  supplierid bigint,
+  unit text not null,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  delete_at TIMESTAMP WITHOUT TIME ZONE,
+  foreign key (supplierid) references suppliers (id)
+);
+
+INSERT INTO category (name_category) VALUES ('Panaderia');
+INSERT INTO category (name_category) VALUES ('Reposteria');

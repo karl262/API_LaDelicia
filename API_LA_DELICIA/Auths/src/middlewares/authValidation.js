@@ -1,5 +1,4 @@
-const { body, validationResult } = require('express-validator');
-
+import { body, validationResult } from 'express-validator';
 const validateDataLogin = [
 
     body('username')
@@ -32,4 +31,4 @@ const validateDataLogin = [
     },
 ];
 
-module.exports = { validateDataLogin };
+export { validateDataLogin };
