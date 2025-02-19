@@ -129,7 +129,7 @@
  */
 
 import express from "express";
-import authMiddleware from "../middlewares/auth.js";
+import { authMiddleware, checkRole } from "../middlewares/auth.js";
 import OrderController from "../controllers/orderController.js";
 
 const router = express.Router();
@@ -137,27 +137,26 @@ const router = express.Router();
 router.post(
   "/convert-to-sale/:orderId",
   authMiddleware,
+  checkRole(["admin"]),
   OrderController.convertOrderToSale
 );
 router.post("/create/order", authMiddleware, OrderController.createOrder);
 router.get(
   "/get/orders/by/id/:id",
   authMiddleware,
+  checkRole(["user", "admin"]),
   OrderController.getOrderById
 );
 router.patch(
   "/updateStatus/:orderId",
   authMiddleware,
+  checkRole(["user", "admin"]),
   OrderController.updateOrderStatus
-);
-router.post(
-  "/convert-to-sale/:orderId",
-  authMiddleware,
-  OrderController.convertOrderToSale
 );
 router.patch(
   "/add/discount/:orderId",
   authMiddleware,
+  checkRole(["user", "admin"]),
   OrderController.addOrderDiscount
 );
 

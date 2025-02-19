@@ -1,5 +1,6 @@
 import { pool } from "../config/db.js";
 import bcrypt from "bcryptjs";
+
 export default class authModel {
   static async getaAuthByid(id) {
     const result = await pool.query("SELECT * FROM auth_user WHERE id = $1", [
@@ -55,12 +56,17 @@ export default class authModel {
     }
   }
 
-  static async register(email, username, password) {
+  static async register(email, username, password, role = 'user') {
     const hashedPassword = await bcrypt.hash(password, 10);
     const result = await pool.query(
-      "INSERT INTO auth_user (email, username, password) VALUES ($1, $2, $3) RETURNING *",
-      [email, username, hashedPassword]
+      "INSERT INTO auth_user (email, username, password, role) VALUES ($1, $2, $3, $4) RETURNING *",
+      [email, username, hashedPassword, role]
     );
-    return result.rows[0];
+    const { password: _, ...userWithoutPassword } = result.rows[0];
+    return userWithoutPassword;
+  }
+
+  static async registerAdmin(email, username, password) {
+    return this.register(email, username, password, 'admin');
   }
 }

@@ -361,38 +361,44 @@
 
 import express from "express";
 import ProductController from "../controllers/productsController.js";
-import authMiddleware from "../middlewares/auth.js";
+import { authMiddleware, checkRole } from "../middlewares/auth.js";
 import upload from "../config/multer.js";
 
 const router = express.Router();
 
-router.use(authMiddleware);
-
-router.get("/get/products", ProductController.getAllProducts);
-router.get("/get/products/by/id/:id", ProductController.getProductById);
+router.get("/get/products", authMiddleware, checkRole(['user', 'admin']), ProductController.getAllProducts);
+router.get("/get/products/by/id/:id", authMiddleware, checkRole(['user', 'admin']), ProductController.getProductById);
 router.get(
   "/get/products/by/name_product/:name_product",
+  authMiddleware,
+  checkRole(['user', 'admin']),
   ProductController.getProductsByName
 );
 router.get(
   "/get/products/by/price_product/:price_product",
+  authMiddleware,
+  checkRole(['user', 'admin']),
   ProductController.getProductsByPrice
 );
 router.get(
   "/get/products/by/stock/:stock",
+  authMiddleware,
+  checkRole(['user', 'admin']),
   ProductController.getProductsByStock
 );
 router.post(
   "/create/product",
+  authMiddleware, checkRole(['admin']),
   upload.single("image"),
   ProductController.createProduct
 );
 router.put(
   "/update/product/:id",
   upload.single("image"),
+  authMiddleware, checkRole(['admin']),
   ProductController.updateProduct
 );
-router.delete("/delete/product/:id", ProductController.deleteProduct);
+router.delete("/delete/product/:id", authMiddleware, checkRole(['admin']), ProductController.deleteProduct);
 
 router.get("/health", (req, res) => {
   res.status(200).json({ status: "OK", service: "product-service" });
