@@ -10,7 +10,7 @@
  *       type: http
  *       scheme: bearer
  *       bearerFormat: JWT
- * 
+ *
  * /api/orders/convert-to-sale/{orderId}:
  *   post:
  *     summary: Convertir un pedido en venta
@@ -128,19 +128,36 @@
  *         description: No autorizado
  */
 
-
-import express from 'express';
-import authMiddleware from '../middlewares/auth.js';
-import OrderController from '../controllers/orderController.js';
+import express from "express";
+import { authMiddleware, checkRole } from "../middlewares/auth.js";
+import OrderController from "../controllers/orderController.js";
 
 const router = express.Router();
 
-router.post('/convert-to-sale/:orderId', authMiddleware, OrderController.convertOrderToSale);
-router.post('/create/order', authMiddleware, OrderController.createOrder);
-router.get('/get/orders/by/id/:id', authMiddleware, OrderController.getOrderById);
-router.patch('/updateStatus/:orderId',authMiddleware, OrderController.updateOrderStatus);
-router.post('/convert-to-sale/:orderId', authMiddleware, OrderController.convertOrderToSale);
-router.patch('/add/discount/:orderId', authMiddleware, OrderController.addOrderDiscount);
+router.post(
+  "/convert-to-sale/:orderId",
+  authMiddleware,
+  checkRole(["admin"]),
+  OrderController.convertOrderToSale
+);
+router.post("/create/order", authMiddleware, OrderController.createOrder);
+router.get(
+  "/get/orders/by/id/:id",
+  authMiddleware,
+  checkRole(["user", "admin"]),
+  OrderController.getOrderById
+);
+router.patch(
+  "/updateStatus/:orderId",
+  authMiddleware,
+  checkRole(["user", "admin"]),
+  OrderController.updateOrderStatus
+);
+router.patch(
+  "/add/discount/:orderId",
+  authMiddleware,
+  checkRole(["user", "admin"]),
+  OrderController.addOrderDiscount
+);
 
 export default router;
-

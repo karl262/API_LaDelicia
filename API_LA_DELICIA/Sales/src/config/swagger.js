@@ -1,16 +1,15 @@
-import swaggerJSDoc from 'swagger-jsdoc';
-import swaggerUi from 'swagger-ui-express';
-import dotenv from 'dotenv';
+import swaggerJSDoc from "swagger-jsdoc";
+import swaggerUi from "swagger-ui-express";
+import dotenv from "dotenv";
 
 dotenv.config();
 
-// Configuración de Swagger
 const options = {
-definition: {
-    openapi: '3.0.0',
+  definition: {
+    openapi: "3.0.0",
     info: {
-      title: 'Microservicio_Ventas - La Delicia', // Título de la documentación
-      version: '1.0.0',       // Versión de la API
+      title: "Microservicio_Ventas - La Delicia",
+      version: "1.0.0",
       description: `
       Este microservicio gestiona las ventas en la plataforma **La Delicia**. Permite obtener información sobre las ventas realizadas, consultar los detalles de una venta específica y eliminar ventas.
 
@@ -21,20 +20,25 @@ definition: {
     `,
     },
     servers: [
-    {
-        url: 'http://localhost:3100', // URL base del servidor de la API
-    },
+      {
+        url: "https://stirred-sculpin-carefully.ngrok-free.app",
+      },
     ],
-},
-  apis: ['./src/routes/*.js'], // Rutas donde están tus archivos de rutas para generar la documentación automáticamente
+  },
+  apis: ["./src/routes/*.js"],
 };
 
 const swaggerSpec = swaggerJSDoc(options);
 
 const swaggerDocs = (app) => {
-app.use('/docs/sales/api-docs', swaggerUi.serve, 
-    swaggerUi.setup(swaggerSpec));
-console.log('Swagger docs available at http://localhost:3100/docs/sales/api-docs');
+  app.use(
+    "/docs/sales/api-docs",
+    swaggerUi.serve,
+    swaggerUi.setup(swaggerSpec)
+  );
+  console.log(
+    "Swagger docs available at https://stirred-sculpin-carefully.ngrok-free.app/docs/sales/api-docs"
+  );
 };
 
 export default swaggerDocs;

@@ -51,7 +51,7 @@
  *         ingredients: "Harina integral, Agua, Sal"
  *         baking_time: "40 minutos"
  *         image: "file-to-upload.jpg"
- * 
+ *
  * tags:
  *   - name: Products
  *     description: Endpoints para la gestión de productos
@@ -303,7 +303,7 @@
  *       - BearerAuth: []
  *     parameters:
  *       - in: path
- *         name: price_product  
+ *         name: price_product
  *         required: true
  *         schema:
  *           type: number
@@ -359,26 +359,49 @@
  *         description: Error interno del servidor
  */
 
-import express from 'express';
-import ProductController from '../controllers/productsController.js';
-import authMiddleware from '../middlewares/auth.js';  
-import upload from '../config/multer.js';
+import express from "express";
+import ProductController from "../controllers/productsController.js";
+import { authMiddleware, checkRole } from "../middlewares/auth.js";
+import upload from "../config/multer.js";
 
 const router = express.Router();
 
-router.use(authMiddleware);
+router.get("/get/products", authMiddleware, checkRole(['user', 'admin']), ProductController.getAllProducts);
+router.get("/get/products/by/id/:id", authMiddleware, checkRole(['user', 'admin']), ProductController.getProductById);
+router.get(
+  "/get/products/by/name_product/:name_product",
+  authMiddleware,
+  checkRole(['user', 'admin']),
+  ProductController.getProductsByName
+);
+router.get(
+  "/get/products/by/price_product/:price_product",
+  authMiddleware,
+  checkRole(['user', 'admin']),
+  ProductController.getProductsByPrice
+);
+router.get(
+  "/get/products/by/stock/:stock",
+  authMiddleware,
+  checkRole(['user', 'admin']),
+  ProductController.getProductsByStock
+);
+router.post(
+  "/create/product",
+  authMiddleware, checkRole(['admin']),
+  upload.single("image"),
+  ProductController.createProduct
+);
+router.put(
+  "/update/product/:id",
+  upload.single("image"),
+  authMiddleware, checkRole(['admin']),
+  ProductController.updateProduct
+);
+router.delete("/delete/product/:id", authMiddleware, checkRole(['admin']), ProductController.deleteProduct);
 
-router.get('/get/products', ProductController.getAllProducts);
-router.get('/get/products/by/id/:id', ProductController.getProductById);
-router.get('/get/products/by/name_product/:name_product', ProductController.getProductsByName);
-router.get('/get/products/by/price_product/:price_product', ProductController.getProductsByPrice);
-router.get('/get/products/by/stock/:stock', ProductController.getProductsByStock);
-router.post('/create/product', upload.single('image'), ProductController.createProduct);
-router.put('/update/product/:id', upload.single('image'), ProductController.updateProduct);
-router.delete('/delete/product/:id', ProductController.deleteProduct);
-
-router.get('/health', (req, res) => {
-    res.status(200).json({ status: 'OK', service: 'product-service' });
+router.get("/health", (req, res) => {
+  res.status(200).json({ status: "OK", service: "product-service" });
 });
 
 export default router;

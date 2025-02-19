@@ -60,7 +60,7 @@
  *           type: string
  *           description: Mensaje de error
  *           example: Error al realizar la petición
- * 
+ *
  *     UserMobile:
  *       type: object
  *       required:
@@ -100,7 +100,7 @@
  *           type: string
  *           description: La contraseña del usuario
  *           example: password
- * 
+ *
  *     ErrorMobile:
  *       type: object
  *       properties:
@@ -108,7 +108,7 @@
  *           type: string
  *           description: Mensaje de error
  *           example: Error al realizar la petición
- * 
+ *
  *
  */
 
@@ -374,19 +374,18 @@
  *
  */
 
-import express from 'express';
-import UserController from '../controllers/usersController.js';
-import authMiddleware from '../middlewares/auth.js';
+import express from "express";
+import UserController from "../controllers/usersController.js";
+import { authMiddleware, checkRole } from "../middlewares/auth.js";
 
 export const router = express.Router();
 
-router.post('/create/user', UserController.createUser);
-router.post('/create/user/mobile', UserController.createUserMobile);
-router.get('/getAll/users',authMiddleware, UserController.getAllUsers);
-router.get('/get/users/:id',authMiddleware, UserController.getUserById);
-router.get('/get/users/by/user_name/:user_name',authMiddleware, UserController.getUserByUserName);
-router.put('/update/users/:id',authMiddleware, UserController.updateUser);
-router.delete('/delete/user/:id',authMiddleware, UserController.deleteUser);
+router.post("/create/user", UserController.createUser);
+router.post("/create/user/mobile", UserController.createUserMobile);
+router.get("/get/users/by/:id", authMiddleware, checkRole(['user', 'admin']), UserController.getUserById);
+router.get("/get/users/by/user_name/:user_name", authMiddleware, checkRole(['user', 'admin']), UserController.getUserByUserName);
+router.get("/getAll/users", authMiddleware, checkRole(['admin']), UserController.getAllUsers);
+router.put("/update/users/:id", authMiddleware, checkRole(['admin']), UserController.updateUser);
+router.delete("/delete/user/:id", authMiddleware, checkRole(['admin']), UserController.deleteUser);
 
 export default router;
-

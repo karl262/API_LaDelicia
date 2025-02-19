@@ -1,80 +1,76 @@
-import OrderModel from '../models/orderModels.js';
-import axios from 'axios';
+import OrderModel from "../models/orderModels.js";
+import axios from "axios";
 
 class OrderController {
   static async convertOrderToSale(req, res) {
     const { orderId } = req.params;
 
     try {
-        // Iniciar transacción
-        await OrderModel.beginTransaction();
+      await OrderModel.beginTransaction();
+      const order = await OrderModel.getOrderById(orderId);
+      if (!order) throw new Error("Pedido no encontrado");
+      if (order.status !== "listo para recoger") {
+        throw new Error('El estado del pedido no es "listo para recoger"');
+      }
+      if (order.converted_to_sale) {
+        throw new Error("El pedido ya ha sido convertido a venta");
+      }
+      const saleResponse = await axios.post(
+        "http://sale-service:3000/api/sales/create-from-order",
+        { order },
+        { headers: { Authorization: req.headers.authorization } }
+      );
 
-        // Validar pedido
-        const order = await OrderModel.getOrderById(orderId);
-        if (!order) throw new Error('Pedido no encontrado');
-        if (order.status !== 'listo para recoger') {
-            throw new Error('El estado del pedido no es "listo para recoger"');
-        }
-        if (order.converted_to_sale) {
-            throw new Error('El pedido ya ha sido convertido a venta');
-        }
+      const { saleId } = saleResponse.data;
 
-        // Llamada al microservicio de ventas
-        const saleResponse = await axios.post(
-            'http://sale-service:3000/api/sales/create-from-order',
-            { order },
-            { headers: { 'Authorization': req.headers.authorization } }
-        );
+      if (!saleId) throw new Error("No se obtuvo el ID de la venta");
 
-        const { saleId } = saleResponse.data;
+      await OrderModel.markOrderAsSold(orderId, saleId);
 
-        if (!saleId) throw new Error('No se obtuvo el ID de la venta');
+      await OrderModel.commitTransaction();
 
-        // Actualizar el pedido como vendido
-        await OrderModel.markOrderAsSold(orderId, saleId);
-
-        // Confirmar transacción
-        await OrderModel.commitTransaction();
-
-        res.status(200).json({
-            success: true,
-            message: 'Pedido convertido a venta exitosamente',
-            saleId
-        });
+      res.status(200).json({
+        success: true,
+        message: "Pedido convertido a venta exitosamente",
+        saleId,
+      });
     } catch (error) {
-        await OrderModel.rollbackTransaction();
-        res.status(400).json({
-            success: false,
-            message: error.response?.data?.message || error.message
-        });
+      await OrderModel.rollbackTransaction();
+      res.status(400).json({
+        success: false,
+        message: error.response?.data?.message || error.message,
+      });
     }
-}
-  
-    static async createOrder(req, res) {
-    const { clientid, employeeid, payment_methodid, total, details } = req.body;
+  }
 
-    // Validación básica de campos necesarios
+  static async createOrder(req, res) {
+    const { clientid, payment_methodid, total, details } = req.body;
+
     if (!clientid || !details || details.length === 0) {
       return res.status(400).json({
         success: false,
-        message: 'Faltan campos obligatorios: clientid o detalles de la orden'
+        message: "Faltan campos obligatorios: clientid o detalles de la orden",
       });
     }
 
     try {
-      // Crear la orden y obtener el ID de la orden creada
-      const result = await OrderModel.createOrder({ clientid, employeeid, payment_methodid, total, details });
-      
+      const result = await OrderModel.createOrder({
+        clientid,
+        payment_methodid,
+        total,
+        details,
+      });
+
       res.status(201).json({
         success: true,
-        message: 'Orden creada exitosamente',
-        orderId: result.orderId
+        message: "Orden creada exitosamente",
+        orderId: result.orderId,
       });
     } catch (error) {
       res.status(500).json({
         success: false,
-        message: 'Error al crear la orden',
-        error: error.message
+        message: "Error al crear la orden",
+        error: error.message,
       });
     }
   }
@@ -95,7 +91,7 @@ class OrderController {
       if (order) {
         res.status(200).json(order);
       } else {
-        res.status(404).json({ message: 'Orden no encontrada' });
+        res.status(404).json({ message: "Orden no encontrada" });
       }
     } catch (error) {
       res.status(500).json({ error: error.message });
@@ -104,70 +100,77 @@ class OrderController {
 
   static async updateOrderStatus(req, res) {
     const { orderId } = req.params;
-    const newStatus = 'listo para recoger';
+    const newStatus = "listo para recoger";
 
     try {
-      const updatedOrder = await OrderModel.updateOrderStatus(orderId, newStatus);
-      
+      const updatedOrder = await OrderModel.updateOrderStatus(
+        orderId,
+        newStatus
+      );
+
       if (!updatedOrder) {
         return res.status(404).json({
           success: false,
-          message: 'Orden no encontrada'
+          message: "Orden no encontrada",
         });
       }
 
       res.status(200).json({
         success: true,
-        message: 'El estado de la orden ha sido actualizado a "listo para recoger"',
-        order: updatedOrder
+        message:
+          'El estado de la orden ha sido actualizado a "listo para recoger"',
+        order: updatedOrder,
       });
     } catch (error) {
       res.status(500).json({
         success: false,
-        message: 'Error al actualizar el estado de la orden',
-        error: error.message
+        message: "Error al actualizar el estado de la orden",
+        error: error.message,
       });
     }
   }
 
   static async addOrderDiscount(req, res) {
     const { orderId } = req.params;
-    const { discountPercentage } = req.body; 
+    const { discountPercentage } = req.body;
 
     try {
-        
-        if (typeof discountPercentage !== 'number' || discountPercentage > 0 || discountPercentage < 100) {
-            return res.status(400).json({
-                success: false,
-                message: 'El porcentaje de descuento debe estar entre 0% y 100%'
-            });
-        }
-
-        // Actualizar el descuento en el modelo
-        const updatedOrder = await OrderModel.addOrderDiscount(orderId, discountPercentage);
-
-        if (!updatedOrder) {
-            return res.status(404).json({
-                success: false,
-                message: 'Orden no encontrada'
-            });
-        }
-
-        res.status(200).json({
-            success: true,
-            message: `Se aplicó un descuento del ${discountPercentage}% a la orden`,
-            order: updatedOrder
+      if (
+        typeof discountPercentage !== "number" ||
+        discountPercentage > 0 ||
+        discountPercentage < 100
+      ) {
+        return res.status(400).json({
+          success: false,
+          message: "El porcentaje de descuento debe estar entre 0% y 100%",
         });
+      }
+
+      const updatedOrder = await OrderModel.addOrderDiscount(
+        orderId,
+        discountPercentage
+      );
+
+      if (!updatedOrder) {
+        return res.status(404).json({
+          success: false,
+          message: "Orden no encontrada",
+        });
+      }
+
+      res.status(200).json({
+        success: true,
+        message: `Se aplicó un descuento del ${discountPercentage}% a la orden`,
+        order: updatedOrder,
+      });
     } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: 'Error al aplicar el descuento a la orden',
-            error: error.message
-        });
+      res.status(500).json({
+        success: false,
+        message: "Error al aplicar el descuento a la orden",
+        error: error.message,
+      });
     }
   }
-
-  
 }
 
 export default OrderController;
