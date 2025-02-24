@@ -71,6 +71,34 @@ export default class OrderModel {
     return order;
   }
 
+  static formatOrderResultsClient(rows) {
+    const orders = {};
+
+    rows.forEach(row => {
+        const orderId = row.orderid;
+        if (!orders[orderId]) {
+            orders[orderId] = {
+                id: row.orderid,
+                total: row.total,
+                status: row.status,
+                clientid: row.clientid,
+                payment_methodid: row.payment_methodid,
+                details: []
+            };
+        }
+        orders[orderId].details.push({
+            id: row.id,
+            orderid: row.orderid,
+            quantity: row.quantity,
+            productsid: row.productsid,
+            price_at_order: row.price_at_order,
+            subtotal: row.subtotal
+        });
+    });
+
+    return Object.values(orders); 
+}
+
   static async createOrder(orderData) {
     const { clientid, total, details } = orderData;
 
@@ -120,5 +148,18 @@ export default class OrderModel {
     const values = [newStatus, orderId];
     const { rows } = await pool.query(query, values);
     return rows[0];
+  }
+
+  static async getOrdersByClient(clientid) {
+    const query = `
+      SELECT o.*, od.* 
+      FROM orders o JOIN order_detail od ON o.id = od.orderid
+      WHERE o.clientid = $1 AND o.delete_at IS NULL
+    `;
+    const { rows } = await pool.query(query, [clientid]);
+    if (rows.length === 0) {
+        throw new Error('No orders found for this client ID');
+    }
+    return this.formatOrderResultsClient(rows);
   }
 }

@@ -159,5 +159,11 @@ router.patch(
   checkRole(["user", "admin"]),
   OrderController.addOrderDiscount
 );
+router.get(
+  "/get/orders/by/client/:clientid",
+  authMiddleware,
+  checkRole(["user", "admin"]),
+  OrderController.getOrdersByClient
+);
 
 export default router;
