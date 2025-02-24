@@ -11,7 +11,7 @@ export default class User {
     date_of_birth,
     phone_number,
     postal_code,
-    id_preferred_payment_method
+    id_preferred_payment_method,
   }) {
     try {
       const clientResult = await pool.query(
@@ -34,7 +34,6 @@ export default class User {
     }
   }
 
-  
   static async createUserMobile({
     username,
     name,
@@ -44,10 +43,10 @@ export default class User {
     email,
     password,
   }) {
-    const client = await pool.connect(); 
+    const client = await pool.connect();
     try {
       await client.query("BEGIN");
-  
+
       // Inserta el usuario en la base de datos
       const userResult = await client.query(
         `INSERT INTO users (name, first_surname, last_surname, phone_number) 
@@ -55,16 +54,16 @@ export default class User {
          RETURNING id, name, first_surname, last_surname, phone_number`,
         [name, first_surname, last_surname, phone_number]
       );
-  
+
       const user = userResult.rows[0];
-  
+
       await client.query(
         `UPDATE users 
          SET auth_user_id = $1 
          WHERE id = $1`,
         [user.id]
       );
-  
+
       await axios.post(
         "http://auth-service:3000/api/auths/register/auth/user",
         {
@@ -78,15 +77,15 @@ export default class User {
           },
         }
       );
-  
+
       await client.query("COMMIT");
-      return user; 
+      return user;
     } catch (error) {
       await client.query("ROLLBACK");
       console.error("Error al crear usuario:", error);
       throw new Error("Error al crear usuario en la base de datos");
     } finally {
-      client.release(); 
+      client.release();
     }
   }
 
@@ -129,7 +128,7 @@ export default class User {
       const userData = result.rows[0];
       const authUserId = userData.auth_user_id;
       const response = await axios.get(
-        `http://auth-service:3000/api/auth/by/${authUserId}`
+        `http://auth-service:3000/api/auths/get/auth/by/${authUserId}`
       );
       const authData = response.data;
       return { user: userData, auth: authData };

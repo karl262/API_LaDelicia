@@ -1,15 +1,15 @@
-import swaggerJsdoc from 'swagger-jsdoc';
-import swaggerUi from 'swagger-ui-express';
-import dotenv from 'dotenv';
+import swaggerJsdoc from "swagger-jsdoc";
+import swaggerUi from "swagger-ui-express";
+import dotenv from "dotenv";
 
 dotenv.config();
 
 const options = {
   definition: {
-    openapi: '3.0.0',
+    openapi: "3.0.0",
     info: {
-      title: 'Microservicio_Users',
-      version: '1.0.0',
+      title: "Microservicio_Users",
+      version: "1.0.0",
       description: `
       Este microservicio gestiona los usuarios dentro de la plataforma **La Delicia**. Permite crear, consultar, actualizar y eliminar usuarios. También proporciona la capacidad de obtener usuarios mediante filtros como el nombre de usuario.
 
@@ -25,16 +25,22 @@ const options = {
     },
     servers: [
       {
-        url: 'http://localhost:3100',
+        url: "https://stirred-sculpin-carefully.ngrok-free.app",
       },
     ],
   },
-  apis: ['./src/routes/*.js'],
+  apis: ["./src/routes/*.js"],
 };
 
 const swaggerSpec = swaggerJsdoc(options);
 
 export default function swaggerDocs(app) {
-  app.use('/docs/users/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-  console.log('Swagger docs available at http://localhost:3100/docs/users/api-docs');
-};
+  app.use(
+    "/docs/users/api-docs",
+    swaggerUi.serve,
+    swaggerUi.setup(swaggerSpec)
+  );
+  console.log(
+    "Swagger docs available at https://stirred-sculpin-carefully.ngrok-free.app/docs/users/api-docs"
+  );
+}

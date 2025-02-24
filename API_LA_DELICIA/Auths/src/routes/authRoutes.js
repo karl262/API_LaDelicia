@@ -129,14 +129,23 @@
  *         description: Credenciales invalidas
  */
 
-import express from 'express';
-import authController from '../controllers/authController.js';
-import { validateDataLogin } from '../middlewares/authValidation.js';
+import express from "express";
+import authController from "../controllers/authController.js";
+import { validateDataLogin } from "../middlewares/authValidation.js";
 
 const router = express.Router();
 
-router.get("/get/auth/by/:id", authController.getAuthByid, authController.verifyToken);
-router.post("/register/auth/user", validateDataLogin, authController.register, authController.verifyToken);
+router.get(
+  "/get/auth/by/:id",
+  authController.getAuthByid,
+  authController.verifyToken
+);
+router.post(
+  "/register/auth/user",
+  validateDataLogin,
+  authController.register,
+  authController.verifyToken
+);
 router.post("/login/user", validateDataLogin, authController.login);
 router.post("/verify-token", authController.verifyToken);
 
@@ -149,4 +158,3 @@ router.get("/health", (req, res) => {
 });
 
 export default router;
-
