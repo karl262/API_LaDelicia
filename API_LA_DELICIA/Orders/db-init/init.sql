@@ -1,7 +1,7 @@
 create table if not exists orders (
   id bigint primary key generated always as identity,
   total numeric not null default 0,
-  status text not null check(status in ('pendiente', 'en preparación', 'listo para recoger', 'recogido', 'cancelado')),
+  status text not null check(status in ('pendiente', 'listo para recoger', 'recogido', 'cancelado')),
   clientid bigint,
   payment_methodid bigint,
   discount numeric default 0,

@@ -171,6 +171,41 @@ class OrderController {
       });
     }
   }
+
+  static async getOrdersByClient(req, res) {
+    const { clientid } = req.params;
+
+    if (!clientid) {
+      return res.status(400).json({
+        success: false,
+        message: "El ID del cliente es requerido",
+      });
+    }
+
+    if (isNaN(clientid)) {
+      return res.status(400).json({
+        success: false,
+        message: "El ID del cliente debe ser un número",
+      });
+    }
+
+    try {
+      const orders = await OrderModel.getOrdersByClient(clientid);
+      res.status(200).json(orders);
+    } catch (error) {
+      if (error.message === "No orders found for this client ID") {
+        return res.status(404).json({
+          success: false,
+          message: error.message,
+        });
+      }
+      res.status(500).json({
+        success: false,
+        message: "Error al obtener las ordenes",
+        error: error.message,
+      });
+    }
+  }
 }
 
 export default OrderController;
