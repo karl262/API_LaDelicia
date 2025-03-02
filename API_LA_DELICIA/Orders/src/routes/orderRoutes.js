@@ -168,6 +168,27 @@
  *         description: Ticket de pedido no encontrado
  *       401:
  *         description: No autorizado
+ *
+ * /api/orders/cancel/{orderId}:
+ *   put:
+ *     summary: Cancelar un pedido
+ *     description: Cancela un pedido existente.
+ *     security:
+ *       - BearerAuth: []  # Protegido por autenticación
+ *     parameters:
+ *       - in: path
+ *         name: orderId
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: ID del pedido a cancelar
+ *     responses:
+ *       200:
+ *         description: Pedido cancelado exitosamente
+ *       404:
+ *         description: Pedido no encontrado
+ *       401:
+ *         description: No autorizado
  */
 
 import express from "express";
@@ -218,6 +239,12 @@ router.get(
   authMiddleware,
   checkRole(["user", "admin"]),
   OrderController.generateOrderTicketPDF
+);
+router.put(
+  "/cancel/:orderId",
+  authMiddleware,
+  checkRole(["user", "admin"]),
+  OrderController.cancelOrder
 );
 
 export default router;

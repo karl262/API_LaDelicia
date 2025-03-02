@@ -1,6 +1,7 @@
 import express from 'express';
 import setupSwagger from './src/config/swagger.js';
 import orderRoutes from './src/routes/orderRoutes.js';
+import { startOrderExpirationScheduler } from './src/schedulers/orderScheduler.js';
 import cors from 'cors';
 
 const app = express();
@@ -13,6 +14,9 @@ app.use(cors());
 
 // Configurar Swagger
 setupSwagger(app);
+
+// Iniciar el scheduler para expirar pedidos
+startOrderExpirationScheduler();
 
 // Rutas de la API
 app.use('/api/orders', orderRoutes);

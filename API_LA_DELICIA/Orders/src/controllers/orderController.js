@@ -46,7 +46,13 @@ class OrderController {
   }
 
   static async createOrder(req, res) {
-    const { clientid, payment_methodid, total, details } = req.body;
+    const { 
+      clientid, 
+      payment_methodid, 
+      total, 
+      details, 
+      expiration_minutes = 30 // Default 30 minutes
+    } = req.body;
 
     if (!clientid || !details || details.length === 0) {
       return res.status(400).json({
@@ -61,12 +67,14 @@ class OrderController {
         payment_methodid,
         total,
         details,
+        expiration_minutes
       });
 
       res.status(201).json({
         success: true,
         message: "Orden creada exitosamente",
         orderId: result.orderId,
+        expirationTime: result.expirationTime
       });
     } catch (error) {
       res.status(500).json({
@@ -413,6 +421,37 @@ class OrderController {
           errorType: 'InternalError'
         });
       }
+    }
+  }
+
+  static async cancelOrder(req, res) {
+    const { orderId } = req.params;
+    const newStatus = "cancelado";
+
+    try {
+      const updatedOrder = await OrderModel.updateOrderStatus(
+        orderId,
+        newStatus
+      );
+
+      if (!updatedOrder) {
+        return res.status(404).json({
+          success: false,
+          message: "Orden no encontrada",
+        });
+      }
+
+      res.status(200).json({
+        success: true,
+        message: 'El estado de la orden ha sido actualizado a "cancelado"',
+        order: updatedOrder,
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: "Error al cancelar la orden",
+        error: error.message,
+      });
     }
   }
 }
