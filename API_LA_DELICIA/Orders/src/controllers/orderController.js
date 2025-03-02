@@ -1,5 +1,7 @@
 import OrderModel from "../models/orderModels.js";
 import axios from "axios";
+import PDFDocument from 'pdfkit';
+import moment from 'moment';
 
 class OrderController {
   static async convertOrderToSale(req, res) {
@@ -44,7 +46,13 @@ class OrderController {
   }
 
   static async createOrder(req, res) {
-    const { clientid, payment_methodid, total, details } = req.body;
+    const { 
+      clientid, 
+      payment_methodid, 
+      total, 
+      details, 
+      expiration_minutes = 30 // Default 30 minutes
+    } = req.body;
 
     if (!clientid || !details || details.length === 0) {
       return res.status(400).json({
@@ -59,12 +67,14 @@ class OrderController {
         payment_methodid,
         total,
         details,
+        expiration_minutes
       });
 
       res.status(201).json({
         success: true,
         message: "Orden creada exitosamente",
         orderId: result.orderId,
+        expirationTime: result.expirationTime
       });
     } catch (error) {
       res.status(500).json({
@@ -202,6 +212,244 @@ class OrderController {
       res.status(500).json({
         success: false,
         message: "Error al obtener las ordenes",
+        error: error.message,
+      });
+    }
+  }
+
+  static async getOrderTicket(req, res) {
+    const { id } = req.params;
+    const authToken = req.headers.authorization;
+
+    if (!authToken) {
+      return res.status(401).json({
+        success: false,
+        message: "No se proporcionó token de autenticación"
+      });
+    }
+
+    try {
+      const orderTicket = await OrderModel.getOrderForTicket(id, authToken);
+      if (orderTicket) {
+        res.status(200).json(orderTicket);
+      } else {
+        res.status(404).json({ 
+          success: false,
+          message: "Orden no encontrada para ticket" 
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching order ticket:', error);
+      
+      // More detailed error response
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        res.status(error.response.status || 500).json({ 
+          success: false, 
+          message: "Error al obtener el ticket de la orden", 
+          details: error.response.data,
+          errorType: 'ServiceError'
+        });
+      } else if (error.request) {
+        // The request was made but no response was received
+        res.status(503).json({ 
+          success: false, 
+          message: "No se pudo conectar con los servicios", 
+          errorType: 'NetworkError'
+        });
+      } else {
+        // Something happened in setting up the request
+        res.status(500).json({ 
+          success: false, 
+          message: "Error interno al procesar la solicitud", 
+          errorType: 'InternalError'
+        });
+      }
+    }
+  }
+
+  static async generateOrderTicketPDF(req, res) {
+    const { id } = req.params;
+    const authToken = req.headers.authorization;
+
+    if (!authToken) {
+      return res.status(401).json({
+        success: false,
+        message: "No se proporcionó token de autenticación"
+      });
+    }
+
+    try {
+      // Fetch order ticket information
+      console.log(`Fetching order ticket for ID: ${id}`);
+      const orderTicket = await OrderModel.getOrderForTicket(id, authToken);
+      
+      if (!orderTicket) {
+        console.warn(`No order found for ID: ${id}`);
+        return res.status(404).json({ 
+          success: false, 
+          message: "Orden no encontrada" 
+        });
+      }
+
+      console.log('Order ticket details:', JSON.stringify(orderTicket, null, 2));
+
+      // Create a new PDF document
+      const doc = new PDFDocument({ size: [300, 800], margin: 20 });
+      
+      // Prepare buffers to store PDF content
+      const buffers = [];
+      doc.on('data', buffers.push.bind(buffers));
+      
+      // Handle PDF generation completion
+      doc.on('end', () => {
+        try {
+          const pdfData = Buffer.concat(buffers);
+          
+          // Set response headers for PDF download
+          res.setHeader('Content-Type', 'application/pdf');
+          res.setHeader('Content-Disposition', `attachment; filename=ticket_orden_${id}.pdf`);
+          res.setHeader('Content-Length', pdfData.length);
+          
+          // Send the PDF data
+          res.send(pdfData);
+        } catch (sendError) {
+          console.error('Error sending PDF:', sendError);
+          res.status(500).json({
+            success: false,
+            message: "Error al enviar el archivo PDF",
+            errorDetails: sendError.message
+          });
+        }
+      });
+
+      // Error handling for PDF document
+      doc.on('error', (pdfError) => {
+        console.error('PDF generation error:', pdfError);
+        res.status(500).json({
+          success: false,
+          message: "Error al generar el PDF",
+          errorDetails: pdfError.message
+        });
+      });
+
+      // PDF Content
+      doc.font('Helvetica-Bold').fontSize(16).text('LA DELICIA', { align: 'center' });
+      doc.font('Helvetica').fontSize(10).text('Ticket de la Orden', { align: 'center' });
+      
+      doc.moveDown();
+      
+      // Order Details
+      doc.fontSize(10)
+        .text(`Fecha: ${moment(orderTicket.created_at).format('DD/MM/YYYY HH:mm')}`)
+        .text(`Estado: ${orderTicket.status}`);
+      
+      doc.moveDown();
+      
+      // Client Details
+      doc.font('Helvetica-Bold').text('Información del Cliente:');
+      doc.font('Helvetica')
+        .text(`Nombre: ${orderTicket.client.name}`)
+        .text(`Teléfono: ${orderTicket.client.phone}`);
+      
+      doc.moveDown();
+      
+      // Order Items
+      doc.font('Helvetica-Bold').text('Detalles de la Orden:');
+      doc.font('Helvetica');
+      
+      orderTicket.details.forEach(item => {
+        // Product details
+        const productName = item.product.name;
+        const price = Number(item.price_at_order).toFixed(2);
+        const quantity = item.quantity;
+        const subtotal = Number(item.subtotal).toFixed(2);
+
+        // Print product details
+        doc.text(
+          `${productName} x${quantity} - $${price}`, 
+          { lineBreak: true }
+        );
+        
+        // Print ingredients if available
+        if (item.product.ingredients && item.product.ingredients !== 'Información no disponible') {
+          doc.text(`Ingredientes: ${item.product.ingredients}`, { lineBreak: true });
+        }
+        
+        // Print subtotal
+        doc.text(`Subtotal: $${subtotal}`, { lineBreak: true });
+        
+        doc.moveDown(0.5);
+      });
+      
+      doc.moveDown();
+      
+      // Total
+      const total = Number(orderTicket.total).toFixed(2);
+      doc.font('Helvetica-Bold').text(`Total: $${total}`, { align: 'right' });
+      
+      // Finalize PDF
+      doc.end();
+
+    } catch (error) {
+      console.error('Comprehensive error details:', {
+        message: error.message,
+        stack: error.stack,
+        responseData: error.response?.data,
+        responseStatus: error.response?.status
+      });
+      
+      // More detailed error response
+      if (error.response) {
+        res.status(error.response.status || 500).json({ 
+          success: false, 
+          message: "Error al generar el ticket PDF", 
+          details: error.response.data,
+          errorType: 'ServiceError'
+        });
+      } else if (error.request) {
+        res.status(503).json({ 
+          success: false, 
+          message: "No se pudo conectar con los servicios", 
+          errorType: 'NetworkError'
+        });
+      } else {
+        res.status(500).json({ 
+          success: false, 
+          message: "Error interno al procesar la solicitud", 
+          errorDetails: error.message,
+          errorType: 'InternalError'
+        });
+      }
+    }
+  }
+
+  static async cancelOrder(req, res) {
+    const { orderId } = req.params;
+    const newStatus = "cancelado";
+
+    try {
+      const updatedOrder = await OrderModel.updateOrderStatus(
+        orderId,
+        newStatus
+      );
+
+      if (!updatedOrder) {
+        return res.status(404).json({
+          success: false,
+          message: "Orden no encontrada",
+        });
+      }
+
+      res.status(200).json({
+        success: true,
+        message: 'El estado de la orden ha sido actualizado a "cancelado"',
+        order: updatedOrder,
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: "Error al cancelar la orden",
         error: error.message,
       });
     }
