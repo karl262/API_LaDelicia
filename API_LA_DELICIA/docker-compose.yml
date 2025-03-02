@@ -115,10 +115,14 @@ services:
       - DB_NAME=order_db
       - AUTH_SERVICE_URL=http://auth-service:3000
       - SALE_SERVICE_URL=http://sale-service:3000
+      - USER_SERVICE_URL=http://user-service:3000
+      - PRODUCT_SERVICE_URL=http://product-service:3000
     depends_on:
       - order-db
       - auth-service
       - sale-service
+      - user-service
+      - product-service
 
   # Databases
   auth-db:

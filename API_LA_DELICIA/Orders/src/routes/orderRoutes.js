@@ -126,6 +126,48 @@
  *         description: Pedido no actualizado, faltan campos obligatorios
  *       401:
  *         description: No autorizado
+ *
+ * /api/orders/ticket/{id}:
+ *   get:
+ *     summary: Obtener información de ticket de un pedido
+ *     description: Obtiene la información detallada de un pedido para generar un ticket.
+ *     security:
+ *       - BearerAuth: []  # Protegido por autenticación
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: ID del pedido para obtener información de ticket
+ *     responses:
+ *       200:
+ *         description: Información del ticket obtenida exitosamente
+ *       404:
+ *         description: Ticket de pedido no encontrado
+ *       401:
+ *         description: No autorizado
+ *
+ * /api/orders/ticket/pdf/{id}:
+ *   get:
+ *     summary: Descargar ticket de pedido en PDF
+ *     description: Genera y descarga un ticket de pedido en formato PDF
+ *     security:
+ *       - BearerAuth: []  # Protegido por autenticación
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: ID del pedido para generar ticket PDF
+ *     responses:
+ *       200:
+ *         description: Ticket PDF generado y descargado exitosamente
+ *       404:
+ *         description: Ticket de pedido no encontrado
+ *       401:
+ *         description: No autorizado
  */
 
 import express from "express";
@@ -164,6 +206,18 @@ router.get(
   authMiddleware,
   checkRole(["user", "admin"]),
   OrderController.getOrdersByClient
+);
+router.get(
+  "/ticket/:id",
+  authMiddleware,
+  checkRole(["user", "admin"]),
+  OrderController.getOrderTicket
+);
+router.get(
+  "/ticket/pdf/:id",
+  authMiddleware,
+  checkRole(["user", "admin"]),
+  OrderController.generateOrderTicketPDF
 );
 
 export default router;
