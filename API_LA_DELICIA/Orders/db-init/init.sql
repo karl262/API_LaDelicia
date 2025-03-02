@@ -9,6 +9,7 @@ create table if not exists orders (
   saleid bigint,  
   order_date TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   estimated_completion_time TIMESTAMP WITH TIME ZONE,
+  expiration_time TIMESTAMP WITH TIME ZONE, 
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   delete_at TIMESTAMP WITHOUT TIME ZONE
@@ -26,4 +27,3 @@ create table if not exists order_detail (
   delete_at TIMESTAMP WITHOUT TIME ZONE,
   foreign key (orderid) references orders (id)
 );
-
