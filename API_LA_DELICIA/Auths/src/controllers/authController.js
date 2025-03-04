@@ -3,6 +3,7 @@ import { generateAccessToken } from "../middlewares/authMiddleware.js";
 import jwt from "jsonwebtoken";
 import { validateJwtToken } from "../middlewares/authMiddleware.js";
 
+
 export default class authController {
   static async getAuthByid(req, res) {
     const { id } = req.params;
@@ -115,4 +116,118 @@ export default class authController {
       usuario: result.user,
     });
   }
+
+  static async updateUsername(req, res) {
+    try {
+      const { id } = req.params;
+      const { username } = req.body;
+
+      // Validate input
+      if (!username) {
+        return res.status(400).json({ 
+          error: "El nombre de usuario es requerido" 
+        });
+      }
+
+      // Update username
+      const updatedUser = await authModel.updateUsername(id, username);
+      
+      res.json({
+        message: "Nombre de usuario actualizado exitosamente",
+        user: updatedUser
+      });
+    } catch (error) {
+      console.error("Error al actualizar nombre de usuario:", error);
+      
+      // Handle specific error types
+      if (error.message.includes('nombre de usuario ya está en uso')) {
+        return res.status(409).json({ 
+          error: "Conflicto de nombre de usuario", 
+          details: error.message 
+        });
+      }
+
+      if (error.message.includes('no encontrado')) {
+        return res.status(404).json({ 
+          error: "Usuario no encontrado", 
+          details: error.message 
+        });
+      }
+      
+      // Generic server error
+      res.status(500).json({ 
+        error: "Error interno del servidor", 
+        details: error.message 
+      });
+    }
+  }
+
+  static async initiatePasswordReset(req, res) {
+    try {
+      const { email } = req.body;
+
+      if (!email) {
+        return res.status(400).json({ 
+          error: "Correo electrónico es requerido" 
+        });
+      }
+
+      const result = await authModel.initiatePasswordReset(email);
+      
+      res.status(200).json({
+        message: result.message,
+        userId: result.userId
+      });
+    } catch (error) {
+      console.error("Error iniciando recuperación de contraseña:", error);
+      
+      if (error.message === 'Usuario no encontrado') {
+        return res.status(404).json({ 
+          error: "Usuario no encontrado" 
+        });
+      }
+      
+      res.status(500).json({ 
+        error: "Error interno del servidor", 
+        details: error.message 
+      });
+    }
+  }
+
+  static async resetPassword(req, res) {
+    try {
+      const { userId, verificationCode, newPassword } = req.body;
+
+      // Validate input
+      if (!userId || !verificationCode || !newPassword) {
+        return res.status(400).json({ 
+          error: "Todos los campos son requeridos" 
+        });
+      }
+
+      const result = await authModel.resetPassword(
+        userId, 
+        verificationCode, 
+        newPassword
+      );
+      
+      res.status(200).json({
+        message: result.message
+      });
+    } catch (error) {
+      console.error("Error restableciendo contraseña:", error);
+      
+      if (error.message.includes('Código de verificación inválido o expirado')) {
+        return res.status(400).json({ 
+          error: "Código de verificación inválido o expirado" 
+        });
+      }
+      
+      res.status(500).json({ 
+        error: "Error interno del servidor", 
+        details: error.message 
+      });
+    }
+  }
+
 }

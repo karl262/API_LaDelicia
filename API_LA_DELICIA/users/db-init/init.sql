@@ -16,6 +16,7 @@ create table if not exists users (
   last_surname text not null,
   phone_number text,
   auth_user_id bigint,
+  profile_image text,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   delete_at TIMESTAMP WITHOUT TIME ZONE
@@ -23,3 +24,6 @@ create table if not exists users (
 
 insert into users (name, first_surname, last_surname, auth_user_id)
 values ('admin', 'admin', 'admin', 1);
+
+insert into users (name, first_surname, last_surname, auth_user_id)
+values ('jose', 'pepe', 'lopez', 2);

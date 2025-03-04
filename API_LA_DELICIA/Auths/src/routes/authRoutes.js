@@ -148,6 +148,14 @@ router.post(
 );
 router.post("/login/user", validateDataLogin, authController.login);
 router.post("/verify-token", authController.verifyToken);
+router.patch(
+  "/update/username/:id",
+  authController.updateUsername
+);
+
+
+router.post("/initiate-password-reset", authController.initiatePasswordReset);
+router.post("/reset-password", authController.resetPassword);
 
 router.get("/health", (req, res) => {
   res.status(200).json({

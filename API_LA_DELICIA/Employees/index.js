@@ -12,7 +12,14 @@ const PORT = 3000;
 // Configurar middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors());
+app.use(cors(
+    {
+        origin: '*',
+        methods: ['GET', 'POST', 'PUT', 'DELETE'],
+        allowedHeaders: ['Content-Type', 'Authorization'],
+        credentials: true,
+    }
+));
 
 setupSwagger(app);
 
