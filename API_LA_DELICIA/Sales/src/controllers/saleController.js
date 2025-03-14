@@ -35,15 +35,39 @@ export default class SaleController {
 
   static async getSaleById(req, res) {
     try {
-      const sale = await SaleModel.findById(req.params.id);
-      if (sale) {
-        const details = await SaleModel.findById(sale.id);
-        res.status(200).json({ SaleModel, details });
+      const saleId = req.params.id;
+      const sale = await SaleModel.findById(saleId);
+      
+      if (sale && sale.length > 0) {
+        // Return the first (and presumably only) row with all details
+        const saleData = sale[0];
+        res.status(200).json({
+          id: saleData.id,
+          orderid: saleData.orderid,
+          total: saleData.total,
+          discount: saleData.discount || "0",
+          final_total: saleData.final_total,
+          clientid: saleData.clientid,
+          payment_methodid: saleData.payment_methodid,
+          sale_date: saleData.sale_date,
+          created_at: saleData.created_at,
+          updated_at: saleData.updated_at,
+          delete_at: saleData.delete_at,
+          saleid: saleData.id,
+          productid: saleData.productid,
+          quantity: saleData.quantity,
+          price_at_sale: saleData.price_at_sale,
+          subtotal: saleData.subtotal
+        });
       } else {
         res.status(404).json({ message: "Venta no encontrada" });
       }
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      console.error('Error retrieving sale:', error);
+      res.status(500).json({ 
+        message: "Error interno del servidor", 
+        error: error.message 
+      });
     }
   }
 

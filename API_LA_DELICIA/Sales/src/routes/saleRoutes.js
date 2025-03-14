@@ -140,7 +140,7 @@ import { authMiddleware, checkRole } from "../middlewares/auth.js";
 const router = express.Router();
 
 router.get("/get/sales", authMiddleware, checkRole(['admin']), SaleController.getSales);
-router.get("/get/sales/by/id/:id", authMiddleware, checkRole(['admin']), SaleController.getSaleById);
+router.get("/get/sales/by/id/:id", authMiddleware, checkRole(['admin', 'user']), SaleController.getSaleById);
 router.delete("/delete/sale/:id", authMiddleware, checkRole(['admin']), SaleController.deleteSale);
 router.post("/create-from-order", authMiddleware,  checkRole(['user', 'admin']), SaleController.createSaleFromOrder);
 router.get("/get/sales/by/client/:clientId",authMiddleware, checkRole(['user', 'admin']), SaleController.getSalesByClientId);
