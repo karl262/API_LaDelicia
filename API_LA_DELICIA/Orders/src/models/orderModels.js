@@ -85,6 +85,7 @@ export default class OrderModel {
                 status: row.status,
                 clientid: row.clientid,
                 payment_methodid: row.payment_methodid,
+                expiration_time: row.expiration_time,
                 details: []
             };
         }
