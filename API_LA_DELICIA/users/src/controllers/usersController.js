@@ -28,84 +28,91 @@ export default class UserController {
       res.status(500).json({ error: error.message });
     }
   }
-
   static async createUserMobile(req, res) {
     try {
-      // Log full request body for debugging
-      console.log("Received user mobile creation request:", JSON.stringify(req.body, null, 2));
+        // Log full request body for debugging
+        console.log("Received user mobile creation request:", JSON.stringify(req.body, null, 2));
 
-      // Add default profile image if not provided
-      const userData = {
-        ...req.body,
-        profile_image: req.body.profile_image || process.env.DEFAULT_PROFILE_IMAGE
-      };
+        // Add default profile image if not provided
+        const userData = {
+            ...req.body,
+            profile_image: req.body.profile_image || process.env.DEFAULT_PROFILE_IMAGE
+        };
 
-      // Log processed user data
-      console.log("Processed user data:", JSON.stringify(userData, null, 2));
+        // Log processed user data
+        console.log("Processed user data:", JSON.stringify(userData, null, 2));
 
-      // Create user mobile with authentication
-      const newUser = await User.createUserMobile(userData);
-      
-      // Log successful user creation
-      console.log("User mobile created successfully:", JSON.stringify(newUser, null, 2));
-      
-      res.status(201).json({
-        message: "Usuario móvil creado exitosamente",
-        user: newUser
-      });
+        // Create user mobile with authentication and associated client
+        const { user, client } = await User.createUserMobile(userData);
+
+        // Log successful user and client creation
+        console.log("User mobile and client created successfully:", {
+            user: JSON.stringify(user, null, 2),
+            client: JSON.stringify(client, null, 2)
+        });
+
+        // Respond with success message and created data
+        res.status(201).json({
+            message: "Usuario móvil y cliente creados exitosamente",
+            user: user,
+            client: client
+        });
     } catch (error) {
-      console.error("Error al crear usuario móvil:", {
-        message: error.message,
-        stack: error.stack,
-        requestBody: req.body
-      });
-      
-      // Handle specific error types
-      if (error.message.includes("obligatorios")) {
-        return res.status(400).json({
-          error: "Error de validación",
-          details: error.message
+        console.error("Error al crear usuario móvil:", {
+            message: error.message,
+            stack: error.stack,
+            requestBody: req.body
         });
-      }
 
-      if (error.message.includes("servicio de autenticación")) {
-        return res.status(422).json({
-          error: "Error de autenticación",
-          details: error.message
+        // Handle specific error types
+        if (error.message.includes("obligatorios")) {
+            return res.status(400).json({
+                error: "Error de validación",
+                details: error.message
+            });
+        }
+
+        if (error.message.includes("servicio de autenticación")) {
+            return res.status(422).json({
+                error: "Error de autenticación",
+                details: JSON.stringify(error.message) || "Error desconocido en el servicio de autenticación"
+            });
+        }
+
+        // Generic server error
+        res.status(500).json({
+            error: "Error interno del servidor",
+            details: error.message
         });
-      }
-      
-      // Generic server error
-      res.status(500).json({
-        error: "Error interno del servidor",
-        details: error.message
-      });
     }
-  }
+}
+
+
 
   static async getAllUsers(req, res) {
     try {
       const users = await User.findAll();
-      
+  
       // If no users found, return appropriate response
       if (users.length === 0) {
         return res.status(404).json({ message: "No se encontraron usuarios" });
       }
-
+  
       // Count users with and without authentication data
       const usersWithAuth = users.filter(u => u.auth !== null);
       const usersWithoutAuth = users.filter(u => u.auth === null);
-
+  
       // Log a warning if some users lack authentication data
       if (usersWithoutAuth.length > 0) {
         console.warn(`${usersWithoutAuth.length} usuarios no tienen datos de autenticación`);
       }
-
-      res.json({
+  
+      // Respond with user, auth, and client data
+      res.status(200).json({
         total: users.length,
         usersWithAuth: usersWithAuth.length,
         usersWithoutAuth: usersWithoutAuth.length,
-        users: users
+        data: users // Incluye user, auth y client para cada usuario
       });
     } catch (error) {
       console.error("Error al obtener usuarios:", error);
@@ -169,32 +176,33 @@ export default class UserController {
 
   static async updateUser(req, res) {
     try {
-      // Get user ID from route parameters
+      // Obtener el ID del usuario desde los parámetros de la ruta
       const { id } = req.params;
-
-      // Remove any undefined or null values from request body
+  
+      // Eliminar valores undefined o null del cuerpo de la solicitud
       const updateData = Object.fromEntries(
         Object.entries(req.body).filter(([_, v]) => v != null)
       );
-
-      // Perform the update
+  
+      // Realizar la actualización
       const updatedUser = await User.updateUser(id, updateData);
       
+      // Responder con los datos del usuario y el cliente actualizados
       res.json({
         message: "Usuario actualizado exitosamente",
-        user: updatedUser
+        data: updatedUser // Incluye user y client
       });
     } catch (error) {
       console.error("Error al actualizar usuario:", error);
       
-      // Handle specific error types
+      // Manejar errores específicos
       if (error.message.includes("no encontrado")) {
         return res.status(404).json({ 
           error: "Usuario no encontrado", 
           details: error.message 
         });
       }
-
+  
       if (error.message.includes("campos válidos")) {
         return res.status(400).json({ 
           error: "Datos de actualización inválidos", 
@@ -202,7 +210,7 @@ export default class UserController {
         });
       }
       
-      // Generic server error
+      // Error genérico del servidor
       res.status(500).json({ 
         error: "Error interno del servidor", 
         details: error.message 
@@ -245,13 +253,44 @@ export default class UserController {
 
   static async deleteUser(req, res) {
     try {
-      const deletedUser = await User.delete(req.params.id);
+      // Obtener el ID del usuario desde los parámetros de la ruta
+      const { id } = req.params;
+  
+      // Realizar la eliminación lógica del usuario
+      const deletedUser = await User.delete(id);
+  
+      // Verificar si el usuario fue encontrado y eliminado
       if (!deletedUser) {
-        return res.status(404).json({ message: "Usuario no encontrado" });
+        return res.status(404).json({ 
+          success: false,
+          message: "Usuario no encontrado" 
+        });
       }
-      res.json(deletedUser);
+  
+      // Responder con el usuario eliminado
+      res.status(200).json({
+        success: true,
+        message: "Usuario eliminado exitosamente",
+        data: deletedUser
+      });
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      console.error("Error al eliminar usuario:", error);
+  
+      // Manejar errores específicos
+      if (error.message.includes("no encontrado")) {
+        return res.status(404).json({ 
+          success: false,
+          error: "Usuario no encontrado", 
+          details: error.message 
+        });
+      }
+  
+      // Error genérico del servidor
+      res.status(500).json({ 
+        success: false,
+        error: "Error interno del servidor", 
+        details: error.message 
+      });
     }
   }
 }

@@ -204,7 +204,7 @@ describe('Users Service', () => {
             .send({
                 name: 'A'.repeat(50000000), // Nombre excesivamente largo
                 first_surname: 'García',
-                last_surname: 'Pérez',
+                last_surname: 'Pérez', 
                 auth_user_id: 3,
                 city: 'Ciudad',
                 date_of_birth: '1990-01-01',
