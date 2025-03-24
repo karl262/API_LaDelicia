@@ -50,9 +50,10 @@ export default class User {
             password,
             profile_image = process.env.DEFAULT_PROFILE_IMAGE,
             city = null, // Default value for city
+            direction = null, // Default value for direction
             date_of_birth = null, // Default value for date_of_birth
             postal_code = null, // Default value for postal_code
-            id_preferred_payment_method = 1 // Default value for preferred payment method
+            id_preferred_payment_method = 1, // Default value for preferred payment method
         } = userData;
 
         // Validate required fields
@@ -123,12 +124,12 @@ export default class User {
 
         const userId = userResult.rows[0].id;
 
-        // Create client associated with the user (city, date_of_birth, and postal_code are optional)
+        // Create client associated with the user (city, date_of_birth, postal_code, and direction are optional)
         const clientResult = await client.query(
-            `INSERT INTO client (city, date_of_birth, postal_code, id_preferred_payment_method, user_id) 
-             VALUES ($1, $2, $3, $4, $5) 
+            `INSERT INTO client (city, direction, date_of_birth, postal_code, id_preferred_payment_method, user_id) 
+             VALUES ($1, $2, $3, $4, $5, $6) 
              RETURNING *`,
-            [city, date_of_birth, postal_code, id_preferred_payment_method, userId]
+            [city, direction, date_of_birth, postal_code, id_preferred_payment_method, userId]
         );
 
         // Commit transaction
@@ -150,6 +151,7 @@ export default class User {
         client.release();
     }
 }
+
 
 
   static async create(
@@ -188,76 +190,90 @@ export default class User {
 
   static async findAll() {
     try {
-      // Obtener todos los usuarios que no han sido eliminados
-      const usersResult = await pool.query(
-        "SELECT * FROM users WHERE delete_at IS NULL"
-      );
-  
-      if (usersResult.rows.length === 0) {
-        return [];
-      }
-  
-      const userData = usersResult.rows;
-  
-      // Filtrar usuarios con auth_user_id no nulo
-      const usersWithAuthId = userData.filter(user => user.auth_user_id !== null);
-  
-      // Si no hay usuarios con auth_user_id, devolver solo los datos de usuario y cliente
-      if (usersWithAuthId.length === 0) {
-        const usersWithClients = await Promise.all(
-          userData.map(async (user) => {
-            const clientResult = await pool.query(
-              "SELECT * FROM client WHERE user_id = $1 AND delete_at IS NULL",
-              [user.id]
-            );
-            return {
-              user,
-              auth: null,
-              client: clientResult.rows[0] || null // Cliente asociado (si existe)
-            };
-          })
+        // Obtener todos los usuarios que no han sido eliminados
+        const usersResult = await pool.query(
+            "SELECT * FROM users WHERE delete_at IS NULL"
         );
-        return usersWithClients;
-      }
-  
-      // Obtener datos de autenticación para usuarios con auth_user_id
-      const authUserIds = usersWithAuthId.map((user) => user.auth_user_id);
-  
-      const authResponses = await Promise.all(
-        authUserIds.map((authUserId) =>
-          axios.get(
-            `http://auth-service:3000/api/auths/get/auth/by/${authUserId}`
-          ).catch(error => {
-            console.error(`Error fetching auth for user ${authUserId}:`, error.message);
-            return { data: null }; // Devolver null para solicitudes fallidas
-          })
-        )
-      );
-  
-      const authData = authResponses.map(response => response.data);
-  
-      // Combinar datos de usuario, autenticación y cliente
-      const combinedData = await Promise.all(
-        userData.map(async (user, index) => {
-          const authIndex = usersWithAuthId.findIndex(u => u.id === user.id);
-          const clientResult = await pool.query(
-            "SELECT * FROM client WHERE user_id = $1 AND delete_at IS NULL",
-            [user.id]
-          );
-          return {
-            user,
-            auth: authIndex !== -1 ? authData[authIndex] : null,
-            client: clientResult.rows[0] || null // Cliente asociado (si existe)
-          };
-        })
-      );
-  
-      return combinedData;
+
+        if (usersResult.rows.length === 0) {
+            return [];
+        }
+
+        const userData = usersResult.rows;
+
+        // Filtrar usuarios con auth_user_id no nulo
+        const usersWithAuthId = userData.filter(user => user.auth_user_id !== null);
+
+        // Si no hay usuarios con auth_user_id, devolver solo los datos de usuario y cliente
+        if (usersWithAuthId.length === 0) {
+            const usersWithClients = await Promise.all(
+                userData.map(async (user) => {
+                    const clientResult = await pool.query(
+                        `SELECT id, user_id, city, direction, date_of_birth, postal_code, 
+                                CASE 
+                                    WHEN id_preferred_payment_method = 1 THEN 'Efectivo' 
+                                    ELSE id_preferred_payment_method::TEXT 
+                                END AS id_preferred_payment_method
+                         FROM client WHERE user_id = $1 AND delete_at IS NULL`,
+                        [user.id]
+                    );
+
+                    return {
+                        user,
+                        auth: null,
+                        client: clientResult.rows[0] || null // Cliente con el método de pago ya convertido
+                    };
+                })
+            );
+            return usersWithClients;
+        }
+
+        // Obtener datos de autenticación para usuarios con auth_user_id
+        const authUserIds = usersWithAuthId.map(user => user.auth_user_id);
+
+        const authResponses = await Promise.all(
+            authUserIds.map(authUserId =>
+                axios.get(
+                    `http://auth-service:3000/api/auths/get/auth/by/${authUserId}`
+                ).catch(error => {
+                    console.error(`Error fetching auth for user ${authUserId}:`, error.message);
+                    return { data: null }; // Devolver null para solicitudes fallidas
+                })
+            )
+        );
+
+        const authData = authResponses.map(response => response.data);
+
+        // Combinar datos de usuario, autenticación y cliente
+        const combinedData = await Promise.all(
+            userData.map(async (user, index) => {
+                const authIndex = usersWithAuthId.findIndex(u => u.id === user.id);
+                const clientResult = await pool.query(
+                    `SELECT id, user_id, city, direction, date_of_birth, postal_code, 
+                            CASE 
+                                WHEN id_preferred_payment_method = 1 THEN 'Efectivo' 
+                                ELSE id_preferred_payment_method::TEXT 
+                            END AS id_preferred_payment_method
+                     FROM client WHERE user_id = $1 AND delete_at IS NULL`,
+                    [user.id]
+                );
+
+                return {
+                    user,
+                    auth: authIndex !== -1 ? authData[authIndex] : null,
+                    client: clientResult.rows[0] || null // Cliente con método de pago ya convertido
+                };
+            })
+        );
+
+        return combinedData;
     } catch (error) {
-      console.error("Error al buscar usuarios:", error);
-      throw new Error("Error al buscar usuarios en la base de datos");
+        console.error("Error al buscar usuarios:", error);
+        throw new Error("Error al buscar usuarios en la base de datos");
     }
-  }
+}
+
+
 
   static async findById(id) {
     try {
@@ -358,7 +374,8 @@ export default class User {
             'last_surname', 
             'phone_number', 
             'profile_image',
-            'city', // Campo opcional para el cliente
+            'city',
+            'direction',
             'date_of_birth', // Campo opcional para el cliente
             'postal_code', // Campo opcional para el cliente
             'id_preferred_payment_method' // Campo opcional para el cliente
@@ -375,10 +392,10 @@ export default class User {
 
         // Separar campos de usuario y cliente
         const userFields = validUpdateFields.filter(field => 
-            !['city', 'date_of_birth', 'postal_code', 'id_preferred_payment_method'].includes(field)
+            !['city', 'direction', 'date_of_birth', 'postal_code', 'id_preferred_payment_method'].includes(field)
         );
         const clientFields = validUpdateFields.filter(field => 
-            ['city', 'date_of_birth', 'postal_code', 'id_preferred_payment_method'].includes(field)
+            ['city', 'direction', 'date_of_birth', 'postal_code', 'id_preferred_payment_method'].includes(field)
         );
 
         // Iniciar transacción

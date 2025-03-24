@@ -28,6 +28,7 @@ export default class UserController {
       res.status(500).json({ error: error.message });
     }
   }
+  
   static async createUserMobile(req, res) {
     try {
         // Log full request body for debugging
