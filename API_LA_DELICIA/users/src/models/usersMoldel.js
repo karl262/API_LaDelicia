@@ -358,7 +358,7 @@ export default class User {
     return result.rows[0];
   }
 
-  static async updateUser(id, updateData) {
+  static async updateUser(id, updateData) { 
     const client = await pool.connect();
     
     try {
@@ -398,13 +398,18 @@ export default class User {
             ['city', 'direction', 'date_of_birth', 'postal_code', 'id_preferred_payment_method'].includes(field)
         );
 
+        // Verificar si id_preferred_payment_method tiene el valor "Efectivo"
+        if (updateData.id_preferred_payment_method === 'Efectivo') {
+            updateData.id_preferred_payment_method = 1; // Asignar el valor correspondiente en la base de datos (por ejemplo, 1 para 'Efectivo')
+        }
+
         // Iniciar transacción
         await client.query("BEGIN");
 
         // Actualizar usuario si hay campos válidos
         if (userFields.length > 0) {
             const updateSetClauses = userFields.map((field, index) => 
-                `${field} = $${index + 1}`
+                `${field} = $${index + 1}` 
             ).join(', ');
 
             const queryValues = userFields.map(field => updateData[field]);
@@ -423,7 +428,7 @@ export default class User {
         // Actualizar cliente si hay campos válidos
         if (clientFields.length > 0) {
             const updateSetClauses = clientFields.map((field, index) => 
-                `${field} = $${index + 1}`
+                `${field} = $${index + 1}` 
             ).join(', ');
 
             const queryValues = clientFields.map(field => updateData[field]);
